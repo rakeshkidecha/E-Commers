@@ -1,0 +1,53 @@
+
+<%- include('../layouts/header') %>
+
+<div class="content-wrapper">
+    <div class="row">
+      <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">View Admin</h4>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th> Profile Image </th>
+                    <th> Name </th>
+                    <th> Email </th>
+                    <th> Gender </th>
+                    <th> Hobby </th>
+                    <th> City </th>
+                    <th> Status </th>
+                    <th> About </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% allAdmin.map((item)=>{ %>
+                    <tr>
+                      <td class="py-1">
+                        <img src="<%= item.admin_image %>" alt="image" />
+                      </td>
+                      <td> <%= item.name %> </td>
+                      <td> <%= item.email %></td>
+                      <td> <%= item.gender %> </td>
+                      <td> <%= item.hobby.join(', ') %> </td>
+                      <td> <%= item.city %> </td>
+                      <td> <%= item.status %> </td>
+                      <td class="d-flex"> 
+                          <a href="/deleteAdmin/<%= item.id %>" class="nav-link mx-2"><i class="fa-solid fa-trash"></i></a>
+                          <a href="/updateAdmin/<%= item.id %>" class="nav-link mx-2"><i class="fa-solid fa-pen-to-square"></i></a>
+                      </td>
+                    </tr>
+                  <% }) %>
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <%- include('../layouts/footer') %>

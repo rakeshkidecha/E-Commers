@@ -1,0 +1,69 @@
+<%- include('../layouts/header') %>
+
+
+<div class="content-wrapper">
+    <div class="row">
+      <!-- ----------------------------------------------------------------------------- -->
+      <div class="col-7 mx-auto grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Add Admin</h4>
+            <p class="card-description">Add Admin </p>
+            <form method="post" action="/insertAdmin" enctype="multipart/form-data" class="forms-sample">
+              <div class="form-group">
+                <label for="exampleInputName1">First Name:- </label>
+                <input type="text" name="fName" class="form-control" id="exampleInputName1" placeholder="First Name">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputName1">Last Name:- </label>
+                <input type="text" name="lName" class="form-control" id="exampleInputName1" placeholder="Last Name">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputEmail3">Email address:- </label>
+                <input type="email" name="email" class="form-control" id="exampleInputEmail3" placeholder="Email">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputPassword4">Password:- </label>
+                <input type="password" name="password" class="form-control" id="exampleInputPassword4" placeholder="Password">
+              </div>
+              <div class="form-group">
+                <label for="exampleSelectGender">Gender:- </label>
+                <input type="radio"  class="form-check-input mx-2" name="gender" id="optionsRadios1" value="Male"> Male 
+                <input type="radio" class="form-check-input mx-2" name="gender" id="optionsRadios1" value="Female"> Female 
+                <input type="radio" class="form-check-input mx-2" name="gender" id="optionsRadios1" value="Other"> Other 
+              </div>
+              <div class="form-group">
+                <label for="exampleSelectGender">Hobby:- </label>
+                <% hobbyNames  =["Reading","Walking","Playing","Dancing"] %>
+                <% hobbyNames.map((item)=>{ %>
+                    <input type="checkbox" name="hobby" class="form-check-input mx-2" value="<%= item %>"> <%= item %> 
+                <% }) %>
+              </div>
+              <div class="form-group">
+                <label>Image upload:- </label>
+                <input type="file" name="admin_image" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputCity1">City:- </label>
+                <% cityNames  =["Surat","Mumbai","Rajkot","Vapi","Bhavnagar"] %>
+                <select name="city" class="form-select text-dark">
+                    <option value="">--Select City--</option>
+                    <% cityNames.map((item)=>{ %>
+                        <option value="<%= item %>"><%= item %></option>
+                    <% }) %>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exampleTextarea1">About:- </label>
+                <textarea class="form-control" name="about" id="exampleTextarea1" placeholder="About" rows="4"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary me-2">Submit</button>
+              <button class="btn btn-light">Cancel</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../layouts/footer') %>

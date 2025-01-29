@@ -1,0 +1,70 @@
+<%- include('../layouts/header') %>
+
+
+<div class="content-wrapper">
+    <div class="row">
+      <!-- ----------------------------------------------------------------------------- -->
+      <div class="col-7 mx-auto grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Edit Admin</h4>
+            <p class="card-description">Edit Admin </p>
+            <form method="post" action="/editAdmin" enctype="multipart/form-data" class="forms-sample">
+                <input type="hidden" name="id" value="<%= adminData.id %>" />
+              <div class="form-group">
+                <label for="exampleInputName1">First Name:- </label>
+                <input type="text" name="fName" value="<%= adminData.name.split(' ')[0] %>" class="form-control" id="exampleInputName1" placeholder="First Name">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputName1">Last Name:- </label>
+                <input type="text" name="lName" value="<%= adminData.name.split(' ')[1] %>" class="form-control" id="exampleInputName1" placeholder="Last Name">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputEmail3">Email address:- </label>
+                <input type="email" name="email" value="<%= adminData.email %>" class="form-control" id="exampleInputEmail3" placeholder="Email">
+              </div>
+              <div class="form-group">
+                <label for="exampleSelectGender">Gender:- </label>
+                <input type="radio"  class="form-check-input mx-2" name="gender"
+                 <%= adminData.gender == 'Male'? 'checked' : '' %> id="optionsRadios1" value="Male"> Male 
+                <input type="radio" class="form-check-input mx-2" name="gender"
+                <%= adminData.gender == 'Female'? 'checked' : '' %> id="optionsRadios1" value="Female"> Female 
+                <input type="radio" class="form-check-input mx-2" name="gender"
+                <%= adminData.gender == 'Other'? 'checked' : '' %> id="optionsRadios1" value="Other"> Other 
+              </div>
+              <div class="form-group">
+                <label for="exampleSelectGender">Hobby:- </label>
+                <% hobbyNames  =["Reading","Walking","Playing","Dancing"] %>
+                <% hobbyNames.map((item)=>{ %>
+                    <input type="checkbox" name="hobby" <%= adminData.hobby.includes(item)? 'checked' : '' %> class="form-check-input mx-2" value="<%= item %>"> <%= item %> 
+                <% }) %>
+              </div>
+              <div class="form-group">
+                <label>Image upload:- </label>
+                <input type="file" name="admin_image" class="form-control">
+                <img src="<%= adminData.admin_image%>" alt="AdminImage" title="AdminImage" width="100px" class="img-fluid mt-2">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputCity1">City:- </label>
+                <% cityNames  =["Surat","Mumbai","Rajkot","Vapi","Bhavnagar"] %>
+                <select name="city" class="form-select text-dark">
+                    <option value="">--Select City--</option>
+                    <% cityNames.map((item)=>{ %>
+                        <option value="<%= item %>" <%= adminData.city == item? 'selected' : '' %>><%= item %></option>
+                    <% }) %>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="exampleTextarea1">About:- </label>
+                <textarea class="form-control" name="about" id="exampleTextarea1" placeholder="About" rows="4"><%= adminData.about %></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary me-2">Update</button>
+              <a href="/viewAdmin" class="btn btn-light">Cancel</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../layouts/footer') %>
