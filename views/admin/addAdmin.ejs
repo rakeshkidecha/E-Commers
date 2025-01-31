@@ -11,54 +11,85 @@
             <p class="card-description">Add Admin </p>
             <form method="post" action="/insertAdmin" enctype="multipart/form-data" class="forms-sample">
               <div class="form-group">
-                <label for="exampleInputName1">First Name:- </label>
-                <input type="text" name="fName" class="form-control" id="exampleInputName1" placeholder="First Name">
+                <label for="exampleInputName1">*First Name:- </label>
+                <input type="text" name="fName" value="<%= oldValue && oldValue.fName %>" class="form-control" id="exampleInputName1" placeholder="First Name">
+                <% if(errors&&errors.fName){ %>
+                  <p class="text-danger">*<%= errors.fName.msg %></p>
+                <% } %>
               </div>
               <div class="form-group">
-                <label for="exampleInputName1">Last Name:- </label>
-                <input type="text" name="lName" class="form-control" id="exampleInputName1" placeholder="Last Name">
+                <label for="exampleInputName1">*Last Name:- </label>
+                <input type="text" name="lName" value="<%= oldValue && oldValue.lName %>" class="form-control" id="exampleInputName1" placeholder="Last Name">
+                <% if(errors&&errors.lName){ %>
+                  <p class="text-danger">*<%= errors.lName.msg %></p>
+                <% } %>
               </div>
               <div class="form-group">
-                <label for="exampleInputEmail3">Email address:- </label>
-                <input type="email" name="email" class="form-control" id="exampleInputEmail3" placeholder="Email">
+                <label for="exampleInputEmail3">*Email address:- </label>
+                <input type="email" name="email" value="<%= oldValue && oldValue.email %>" class="form-control" id="exampleInputEmail3" placeholder="Email">
+                <% if(errors&&errors.email){ %>
+                  <p class="text-danger">*<%= errors.email.msg %></p>
+                <% } %>
               </div>
               <div class="form-group">
-                <label for="exampleInputPassword4">Password:- </label>
-                <input type="password" name="password" class="form-control" id="exampleInputPassword4" placeholder="Password">
+                <label for="exampleInputPassword4">*Password:- </label>
+                <input type="password" name="password" value="<%= oldValue && oldValue.password %>"  class="form-control" id="exampleInputPassword4" placeholder="Password">
+                <% if(errors&&errors.password){ %>
+                  <p class="text-danger">*<%= errors.password.msg %></p>
+                <% } %>
               </div>
               <div class="form-group">
-                <label for="exampleSelectGender">Gender:- </label>
-                <input type="radio"  class="form-check-input mx-2" name="gender" id="optionsRadios1" value="Male"> Male 
-                <input type="radio" class="form-check-input mx-2" name="gender" id="optionsRadios1" value="Female"> Female 
-                <input type="radio" class="form-check-input mx-2" name="gender" id="optionsRadios1" value="Other"> Other 
+                <label for="exampleInputPassword4">*Confirm Password:- </label>
+                <input type="password" value="<%= oldValue && oldValue.confirmPassword %>" name="confirmPassword" class="form-control" id="exampleInputPassword4" placeholder="Password">
+                <% if(errors&&errors.confirmPassword){ %>
+                  <p class="text-danger">*<%= errors.confirmPassword.msg %></p>
+                <% } %>
               </div>
               <div class="form-group">
-                <label for="exampleSelectGender">Hobby:- </label>
+                <label for="exampleSelectGender">*Gender:- </label>
+                <input type="radio"  class="form-check-input mx-2" name="gender" id="optionsRadios1" value="Male" <%= oldValue && oldValue.gender=='Male'?'checked':'' %>/> Male 
+                <input type="radio" class="form-check-input mx-2" name="gender" id="optionsRadios1" value="Female" <%= oldValue && oldValue.gender=='Female'?'checked':'' %>/> Female 
+                <input type="radio" class="form-check-input mx-2" name="gender" id="optionsRadios1" value="Other" <%= oldValue && oldValue.gender=='Other'?'checked':'' %> /> Other 
+                <% if(errors&&errors.gender){ %>
+                  <p class="text-danger">*<%= errors.gender.msg %></p>
+                <% } %>
+              </div>
+              <div class="form-group">
+                <label for="exampleSelectGender">*Hobby:- </label>
                 <% hobbyNames  =["Reading","Walking","Playing","Dancing"] %>
                 <% hobbyNames.map((item)=>{ %>
-                    <input type="checkbox" name="hobby" class="form-check-input mx-2" value="<%= item %>"> <%= item %> 
+                    <input type="checkbox" name="hobby" class="form-check-input mx-2" value="<%= item %>" <%= oldValue && oldValue.hobby && oldValue.hobby.includes(item)?'checked':'' %>/> <%= item %> 
                 <% }) %>
+                <% if(errors&&errors.hobby){ %>
+                  <p class="text-danger">*<%= errors.hobby.msg %></p>
+                <% } %>
               </div>
               <div class="form-group">
-                <label>Image upload:- </label>
+                <label>*Image upload:- </label>
                 <input type="file" name="admin_image" class="form-control">
               </div>
               <div class="form-group">
-                <label for="exampleInputCity1">City:- </label>
+                <label for="exampleInputCity1">*City:- </label>
                 <% cityNames  =["Surat","Mumbai","Rajkot","Vapi","Bhavnagar"] %>
                 <select name="city" class="form-select text-dark">
                     <option value="">--Select City--</option>
                     <% cityNames.map((item)=>{ %>
-                        <option value="<%= item %>"><%= item %></option>
+                        <option value="<%= item %>" <%= oldValue && oldValue.city==item?'selected':'' %>><%= item %></option>
                     <% }) %>
                 </select>
+                <% if(errors&&errors.city){ %>
+                  <p class="text-danger">*<%= errors.city.msg %></p>
+                <% } %>
               </div>
               <div class="form-group">
-                <label for="exampleTextarea1">About:- </label>
-                <textarea class="form-control" name="about" id="exampleTextarea1" placeholder="About" rows="4"></textarea>
+                <label for="exampleTextarea1">*About:- </label>
+                <textarea class="form-control" name="about" id="exampleTextarea1" placeholder="About" rows="4"><%= oldValue && oldValue.about %></textarea>
+                <% if(errors&&errors.about){ %>
+                  <p class="text-danger">*<%= errors.about.msg %></p>
+                <% } %>
               </div>
               <button type="submit" class="btn btn-primary me-2">Submit</button>
-              <button class="btn btn-light">Cancel</button>
+              <a href="/addAdmin" class="btn btn-light">Cancel</a>
             </form>
           </div>
         </div>

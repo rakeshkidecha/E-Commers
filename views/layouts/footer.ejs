@@ -27,6 +27,7 @@
 <script src="/js/template.js"></script>
 <script src="/js/settings.js"></script>
 <script src="/js/todolist.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.js" integrity="sha512-lOrm9FgT1LKOJRUXF3tp6QaMorJftUjowOWiDcG5GFZ/q7ukof19V0HKx/GWzXCdt9zYju3/KhBNdCLzK8b90Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <!-- endinject -->
 <!-- Custom js for this page-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/js/all.min.js" integrity="sha512-b+nQTCdtTBIRIbraqNEwsjB6UvL3UEMkXnhzd8awtCYh0Kcsjl9uEgwVFVbhoj3uu1DO1ZMacNvLoyJJiNfcvg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -34,5 +35,25 @@
 <script src="/js/dashboard.js"></script>
 <!-- <script src="/js/Chart.roundedBarCharts.js"></script> -->
 <!-- End custom js for this page-->
+
+ <script>
+   '<% if(locals.flash && locals.flash.success.length > 0) { %>'
+        new Noty({
+          type: 'success',
+          layout: 'topCenter',
+          theme:'metroui',
+          text: '<%= locals.flash.success %>',
+          timeout : 1000
+        }).show();
+ ' <% } else if(locals.flash && locals.flash.error.length > 0) { %>'
+        new Noty({
+          type: 'error',
+          layout: 'topCenter',
+          theme:'metroui',
+          text: '<%= locals.flash.error %>',
+          timeout : 1000
+        }).show()
+  '<% } %> '
+ </script>
 </body>
 </html>

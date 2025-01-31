@@ -3,16 +3,20 @@ const path = require('path')
 const port = 8012;
 const db = require('./config/db');
 const app = express();
+const cookieParser = require('cookie-parser');
 
 const passport = require('passport');
 const session = require('express-session');
 const passportLocal = require('./config/passportLocalStrategy');
 
+const flash = require('connect-flash');
+const flashMassage = require('./config/fleshMassage');
+
 app.set('view engine','ejs');
 app.set('views',path.join(__dirname,'views'));
 
 app.use(express.urlencoded());
-
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname,'assets')));
 app.use('/uploads',express.static(path.join(__dirname,'uploads')));
 
@@ -29,6 +33,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(passport.setAuthUser)
+
+app.use(flash());
+app.use(flashMassage.flashMsg);
 
 app.use('/',require('./routes/generalRoutes'));
 

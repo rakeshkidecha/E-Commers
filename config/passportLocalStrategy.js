@@ -1,12 +1,13 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const Admin = require('../models/AdminModel');
+const bcrypt = require('bcrypt');
 
 passport.use('adminLogin',new LocalStrategy({usernameField:'email'},async (email,password,done)=>{
     console.log(email,password);
-    const adminData = await Admin.findOne({email:email});
+    const adminData = await Admin.findOne({email:email,status:true});
     if(adminData){
-        if(adminData.password == password){
+        if(await bcrypt.compare(password,adminData.password)){
             return done(null,adminData);
         }else{
             return done(null,false);

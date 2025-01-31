@@ -41,7 +41,7 @@ const AdminSchema = mongoose.Schema({
         type : Boolean,
         default:true
     }
-},{timetamps:true});
+},{timestamps:true});
 
 const imageStorage = multer.diskStorage({
     destination:(req,file,cb)=>{
