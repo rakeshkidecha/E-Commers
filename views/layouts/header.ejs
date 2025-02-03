@@ -95,12 +95,12 @@
             </li>
             <li class="nav-item nav-profile dropdown">
               <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown">
-                <img src="<%= locals.adminData.admin_image %>" alt="profile" />
+                <img src="#" alt="profile" />
               </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
                 <a href="/adminProfile" class="dropdown-item">
-                  <i class="ti-user text-primary"></i> <%= locals.adminData.name %> </a>
-                <a href="/changePassword/<%= locals.adminData._id %>" class="dropdown-item">
+                  <i class="ti-user text-primary"></i> # </a>
+                <a href="/changePassword/#" class="dropdown-item">
                   <i class="ti-lock text-primary"></i> Change Password </a>
                 <a href="/adminLogOut" class="dropdown-item">
                   <i class="ti-power-off text-primary"></i> Logout </a>
@@ -138,6 +138,20 @@
                 <ul class="nav flex-column sub-menu">
                   <li class="nav-item"> <a class="nav-link" href="/addAdmin">Add Admin</a></li>
                   <li class="nav-item"> <a class="nav-link" href="/viewAdmin">View Admin</a></li>
+                </ul>
+              </div>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+                <i class="icon-columns menu-icon"></i>
+                <span class="menu-title">Category</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="form-elements">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="/category">Add Category</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="/category/viewCategory">View Category</a></li>
                 </ul>
               </div>
             </li>

@@ -1,0 +1,26 @@
+<%- include('../layouts/header') %>
+
+
+<div class="content-wrapper">
+    <div class="row">
+      <!-- ----------------------------------------------------------------------------- -->
+      <div class="col-7 mx-auto grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Add Category</h4>
+            <p class="card-description">Add Category </p>
+            <form method="post" action="/category/insertCategory" class="forms-sample">
+              <div class="form-group">
+                <label for="exampleInputName1">*Category Name:- </label>
+                <input type="text" name="categoryName" class="form-control" id="exampleInputName1" placeholder="First Name">
+              </div>
+              <button type="submit" class="btn btn-primary me-2">Add</button>
+              <a href="/addCategory" class="btn btn-light">Cancel</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../layouts/footer') %>
