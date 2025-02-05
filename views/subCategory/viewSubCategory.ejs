@@ -7,12 +7,12 @@
       <input type="text" name="searchValue" value="<%= searchValue %>"  class="py-1 px-3 border rounded-1" placeholder="searching here" />
       <input type="date" class="py-1 px-3 border rounded-1" name="date" value="<%= date && new Date(date).toISOString().split('T')[0] %>" />
       <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-magnifying-glass"></i></button>
-      <a href="/category/viewCategory" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrows-rotate"></i></a>
+      <a href="/subCategory/viewSubCategory" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrows-rotate"></i></a>
     </form>
     <div class="dropdown ms-2">
       <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuSizeButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> ShortBy </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuSizeButton1">
-        <a class="dropdown-item" href="?sort=<%= sort==1?-1:1 %>&&sortType=categoryName<%= searchValue?'&searchValue='+searchValue:'' %><%= date?'&date='+date:'' %>">Name ↑↓</a>
+        <a class="dropdown-item" href="?sort=<%= sort==1?-1:1 %>&&sortType=subCategoryName<%= searchValue?'&searchValue='+searchValue:'' %><%= date?'&date='+date:'' %>">Name ↑↓</a>
         <a class="dropdown-item" href="?sort=<%= sort==1?-1:1 %>&&sortType=createdAt<%= searchValue?'&searchValue='+searchValue:'' %><%= date?'&date='+date:'' %>">Date ↑↓</a>
       </div>
     </div>
@@ -21,8 +21,8 @@
       <div class="col-lg-6 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
-            <form method="post" action="/category/deactiveAllCategory">
-            <h4 class="card-title d-flex align-items-center justify-content-between">Active Category <button type="submit" style="font-size: 12px;" class="btn btn-primary p-2 ms-2 hideBtn" id="allDeactiveBtn"><i class="fa-solid fa-ban"></i></button></h4>
+            <form method="post" action="/subCategory/deactiveAllSubCategory">
+            <h4 class="card-title d-flex align-items-center justify-content-between">Active Sub Category <button type="submit" style="font-size: 12px;" class="btn btn-primary p-2 ms-2 hideBtn" id="allDeactiveBtn"><i class="fa-solid fa-ban"></i></button></h4>
             <div class="table-responsive">
               <table class="table table-striped">
                 <thead>
@@ -31,23 +31,25 @@
                       <input type="checkbox" id="checkAll" />
                     </th>
                     <th style="width: 30px;">#</th>
-                    <th>Category Name </th>
+                    <th>Category</th>
+                    <th>Sub Category</th>
                     <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <% let count = 0;
-                   allCategory.map((item)=>{
+                  allSubCategory.map((item)=>{
                     if(item.status) {%>
                     <tr>
                       <td><input type="checkbox" name="catIds" class="activeCat" value="<%= item._id %>"/></td>
                       <td> <%= count++ %></td>
-                      <td> <%= item.categoryName %> </td>
+                      <td> <%= item.categoryId.categoryName%> </td>
+                      <td> <%= item.subCategoryName %> </td>
                       </td>
                       <td> 
                           <div class="d-flex">
-                            <a href="/category/changeCategoryStatus/<%= item.id %>/false" class="nav-link mx-2"><i class="fa-solid fa-ban"></i></a>
-                            <a href="javascript:void(0)" onclick="updateCategory(`<%= JSON.stringify(item) %>`)" data-bs-toggle="modal" data-bs-target="#updateCategory" class="nav-link mx-2"><i class="fa-solid fa-pen-to-square"></i></a>
+                            <a href="/subCategory/changeSubCategoryStatus/<%= item.id %>/false" class="nav-link mx-2"><i class="fa-solid fa-ban"></i></a>
+                            <a href="javascript:void(0)" onclick="updateSubCategory(`<%= JSON.stringify(item) %>`)" data-bs-toggle="modal" data-bs-target="#updateSubCategory" class="nav-link mx-2"><i class="fa-solid fa-pen-to-square"></i></a>
                           </div>
                       </td>
                     </tr>
@@ -62,11 +64,11 @@
       <div class="col-lg-6 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
-            <form method="post" action="/category/operandAllDactiveCategory">
+            <form method="post" action="/subCategory/operandAllDactiveSubCategory">
             <div class="card-title d-flex align-items-center justify-content-between">
-              <h4>Deactive Category</h4>
+              <h4>Deactive Sub Category</h4>
               <div>
-                <button type="submit" name="activAll" value="activAll" style="font-size: 12px;padding: 6px;" class="btn btn-primary ms-2 hideBtn" id="allActiveBtn" ><i class="mdi mdi-keyboard-return"></i></button>
+                <button type="submit" name="activeAll" value="activeAll" style="font-size: 12px;padding: 6px;" class="btn btn-primary ms-2 hideBtn" id="allActiveBtn" ><i class="mdi mdi-keyboard-return"></i></button>
                 <button type="submit" name="deleteAll" value="deleteAll" style="font-size: 12px;" class="btn btn-primary p-2 ms-2 hideBtn" id="allDeleteBtn"><i class="fa-solid fa-trash"></i></button>
               </div>
             </div>
@@ -79,24 +81,26 @@
                         <input type="checkbox" id="checkAllDeactive" />
                       </th>
                       <th style="width: 30px;">#</th>
-                    <th>Category Name </th>
+                    <th>Category</th>
+                    <th>Sub Category</th>
                     <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <% count = 0;
-                  allCategory.map((item)=>{
+                  allSubCategory.map((item)=>{
                     if(!item.status) {%>
                     <tr>
                       <td><input type="checkbox" name="catIds" class="deactiveCat" value="<%= item._id %>"/></td>
                       <td> <%= count++ %></td>
-                      <td> <%= item.categoryName %> </td>
+                      <td> <%= item.categoryId.categoryName%> </td>
+                      <td> <%= item.subCategoryName %> </td>
                       </td>
                       <td> 
                           <div class="d-flex">
-                            <a href="/category/changeCategoryStatus/<%= item.id %>/true" class="nav-link mx-2"><i class="mdi mdi-keyboard-return" style="font-size: 18px;"></i></a>
-                            <a href="/category/deleteCategory/<%= item.id %>" class="nav-link mx-2"><i class="fa-solid fa-trash"></i></a>
-                            <a href="javascript:void(0)" onclick="updateCategory(`<%= JSON.stringify(item) %>`)" data-bs-toggle="modal" data-bs-target="#updateCategory" class="nav-link mx-2"><i class="fa-solid fa-pen-to-square"></i></a>
+                            <a href="/subCategory/changeSubCategoryStatus/<%= item.id %>/true" class="nav-link mx-2"><i class="mdi mdi-keyboard-return" style="font-size: 18px;"></i></a>
+                            <a href="/subCategory/deleteSubCategory/<%= item.id %>" class="nav-link mx-2"><i class="fa-solid fa-trash"></i></a>
+                            <a href="javascript:void(0)" onclick="updateSubCategory(`<%= JSON.stringify(item) %>`)" data-bs-toggle="modal" data-bs-target="#updateSubCategory" class="nav-link mx-2"><i class="fa-solid fa-pen-to-square"></i></a>
                           </div>
                       </td>
                     </tr>
@@ -113,19 +117,25 @@
 
 
 <!-- Category Update Modal -->
-<div class="modal fade" id="updateCategory" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="updateSubCategory" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form method="post" action="/category/editCategory" class="forms-sample">
+      <form method="post" action="/subCategory/editSubCategory" class="forms-sample">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="exampleModalLabel">Update Category</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+            <div class="form-group">
+                <label for="exampleInputCity1">*Category:- </label>
+                <select name="categoryId" id="categoryId" class="form-select text-dark">
+                    
+                </select>
+            </div>
           <div class="form-group">
             <input type="hidden" name="id" id="id">
             <label for="exampleInputName1">*Category Name:- </label>
-            <input type="text" name="categoryName" class="form-control" id="categoryName" placeholder="First Name">
+            <input type="text" name="subCategoryName" class="form-control" id="subCategoryName" placeholder="First Name">
           </div>
         </div>
         <div class="modal-footer">
@@ -140,10 +150,16 @@
   <%- include('../layouts/footer') %>
 
   <script>
-    function updateCategory(item){
-      const singleCategory = JSON.parse(item);
-      document.querySelector('#id').value = singleCategory._id;
-      document.querySelector('#categoryName').value = singleCategory.categoryName;
+    function updateSubCategory(item){
+      const singleSubCategory = JSON.parse(item);
+      document.querySelector('#id').value = singleSubCategory._id;
+      document.querySelector('#subCategoryName').value = singleSubCategory.subCategoryName;
+      document.querySelector('#categoryId').innerHTML = `
+            <option value="">--Select City--</option>
+            <% allCategory.map((item)=>{ %>
+                        <option value="<%= item._id %>" ${'<%= item._id %>'== singleSubCategory.categoryId._id ?'selected':''}><%= item.categoryName %></option>
+            <% }) %>
+      ` 
     }
 
     // $('#allDeactiveBtn').hide();

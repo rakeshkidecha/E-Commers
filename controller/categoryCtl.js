@@ -1,8 +1,20 @@
 const Category = require('../models/CategoryModel');
+const SubCategory = require('../models/SubCategoryModel');
+const {validationResult} = require('express-validator')
+
+async function changeSubCatStatusBaseOnCat(subCategoryIds){
+    await SubCategory.updateMany({_id:{$in:subCategoryIds}},{status:false});
+}
+async function deleteSubCatBaseOnCat(subCategoryIds){
+    await SubCategory.deleteMany({_id:{$in:subCategoryIds}},{status:false});
+}
 
 module.exports.addCategory = async (req,res)=>{
     try {
-        return res.render('category/addCategory');
+        return res.render('category/addCategory',{
+            errors:null,
+            oldValue : null
+        });
     } catch (err) {
         req.flash('error',"Somthing Wrong")
         console.log("Some thing wrong",err);
@@ -12,22 +24,31 @@ module.exports.addCategory = async (req,res)=>{
 
 module.exports.insertCategory = async (req,res)=>{
     try {
-        console.log(req.body);
+
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return res.render('category/addCategory',{
+                errors:result.mapped(),
+                oldValue : req.body
+            })
+        }
+
+
         const addedCategory = await Category.create(req.body);
         if(addedCategory){
             req.flash('success',"Category Added Successfully");
             console.log('Category Added Successfully')
-            return res.redirect('back')
+            return res.redirect('/category')
         }else{
             req.flash('success',"faild to add category");
             console.log('faild to add category')
-            return res.redirect('back')
+            return res.redirect('/category')
         }
 
     } catch (err) {
         req.flash('error',"Somthing Wrong")
         console.log("Some thing wrong",err);
-        return res.redirect('back');
+        return res.redirect('/category');
     }
 }
 
@@ -79,6 +100,9 @@ module.exports.changeCategoryStatus = async (req,res)=>{
         const {id,status}= req.params;
         const categoryUpdateStatus = await Category.findByIdAndUpdate(id,{status:status});
         if(categoryUpdateStatus){
+            if(status=="false"){
+                changeSubCatStatusBaseOnCat(categoryUpdateStatus.subCategoryIds);
+            }
             req.flash('success',"Category Status Updated Successfully");
             console.log('Category Status Updated Successfully')
             return res.redirect('back');
@@ -99,6 +123,7 @@ module.exports.deleteCategory = async (req,res)=>{
     try {
         const deleteCategory = await Category.findByIdAndDelete(req.params.id);
         if(deleteCategory){
+            deleteSubCatBaseOnCat(deleteCategory.subCategoryIds);
             req.flash('success',"Category Deleted Successfully");
             console.log('Category Deleted Successfully')
             return res.redirect('back');
@@ -126,6 +151,67 @@ module.exports.editCategory = async(req,res)=>{
             console.log('faild to update category');
             return res.redirect('back');
         }
+    } catch (err) {
+        req.flash('error',"Somthing Wrong")
+        console.log("Some thing wrong",err);
+        return res.redirect('back');
+    }
+}
+
+module.exports.deactiveAllCategory = async (req,res)=>{
+    try {
+        const allActiveCategory = await Category.find({_id:{$in:req.body.catIds}});
+        const updateMany = await Category.updateMany({_id:{$in:req.body.catIds}},{status:false});
+
+        if(updateMany){
+            allActiveCategory.map(async(item)=>{
+                changeSubCatStatusBaseOnCat(item.subCategoryIds);
+            })
+            req.flash('success',"All Selected Category Deactive Successfully");
+            console.log('All Selected Category Deactive Successfully')
+            return res.redirect('back');
+        }else{
+            req.flash('error',"faild to deactive All Selected  category");
+            console.log('faild to deactive All Selected  category');
+            return res.redirect('back');
+        }
+    } catch (err) {
+        req.flash('error',"Somthing Wrong")
+        console.log("Some thing wrong",err);
+        return res.redirect('back');
+    }
+}
+
+module.exports.operandAllDactiveCategory = async(req,res)=>{
+    try {
+        if(req.body.activAll){
+            const updateMany = await Category.updateMany({_id:{$in:req.body.catIds}},{status:true});
+            if(updateMany){
+                req.flash('success',"All selected Deactive Category Active Successfully");
+                console.log('All Deactive Category Active Successfully')
+                return res.redirect('back');
+            }else{
+                req.flash('error',"faild to active All selected Deactive category");
+                console.log('faild to active All Deactive category');
+                return res.redirect('back');
+            }
+        }else{
+            const allDeactiveCat = await Category.find({_id:{$in:req.body.catIds}}) 
+            const deleteMany = await Category.deleteMany({_id:{$in:req.body.catIds}});
+            if(deleteMany){
+                allDeactiveCat.map((item)=>{
+                    deleteSubCatBaseOnCat(item.subCategoryIds);
+                })
+                req.flash('success',"All Selected Category Delete Successfully");
+                console.log('All Selected Category Delete Successfully')
+                return res.redirect('back');
+            }else{
+                req.flash('error',"faild to delete All Selected category");
+                console.log('faild to delete All Selected category');
+                return res.redirect('back');
+            }
+        }
+        
     } catch (err) {
         req.flash('error',"Somthing Wrong")
         console.log("Some thing wrong",err);

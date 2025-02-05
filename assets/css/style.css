@@ -117,6 +117,7 @@
 /* === Import template variables === */
 /*-------------------------------------------------------------------*/
 /* === SCSS Compass Functions === */
+
 @-moz-keyframes flash {
   0% {
     opacity: 1;
