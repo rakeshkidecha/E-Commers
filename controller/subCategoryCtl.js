@@ -1,6 +1,14 @@
 const Category = require('../models/CategoryModel');
 const SubCategory = require('../models/SubCategoryModel');
+const ExtraCategory = require('../models/ExtraCategoryModel');
 
+async function deactiveExCatBsOnSubCat(extraCategoryIds) {
+    await ExtraCategory.updateMany({_id:{$in:extraCategoryIds}},{status:false});
+}
+
+async function deleteExCatBsOnSubCat(extraCategoryIds) {
+    await ExtraCategory.deleteMany({_id:{$in:extraCategoryIds}});
+}
 
 module.exports.addSubCategory = async (req,res)=>{
     try {   
@@ -89,6 +97,9 @@ module.exports.changeSubCategoryStatus = async(req,res)=>{
 
         const updatedSubCategory = await SubCategory.findByIdAndUpdate(id,{status:status});
         if(updatedSubCategory){
+            if(status=='false'){
+                deactiveExCatBsOnSubCat(updatedSubCategory.extraCategoryIds);
+            }
             req.flash('success',"Sub Category Status Updated");
             console.log("Sub Category Status Updated");
             return res.redirect('back');
@@ -109,9 +120,14 @@ module.exports.deleteSubCategory = async(req,res)=>{
     try {
         const deletedSubCategory = await SubCategory.findByIdAndDelete(req.params.id);
         if(deletedSubCategory){
+            // delete sub category id in category model 
             const singleCategory = await Category.findById(deletedSubCategory.categoryId);
             singleCategory.subCategoryIds.splice(singleCategory.subCategoryIds.indexOf(deletedSubCategory.categoryId),1);
             await Category.findByIdAndUpdate(singleCategory._id,singleCategory);
+
+            // delete all ExtraCategory base on sub category 
+            deleteExCatBsOnSubCat(deletedSubCategory.extraCategoryIds);
+
             req.flash('success',"Sub Category Deleted");
             console.log("Sub Category Deleted");
             return res.redirect('back');
@@ -129,7 +145,6 @@ module.exports.deleteSubCategory = async(req,res)=>{
 
 module.exports.editSubCategory = async(req,res)=>{
     try {
-
         const updatedSubCategory = await SubCategory.findByIdAndUpdate(req.body.id,req.body);
         if(updatedSubCategory){
             const singleCategory = await Category.findById(updatedSubCategory.categoryId);
@@ -158,8 +173,12 @@ module.exports.editSubCategory = async(req,res)=>{
 
 module.exports.deactiveAllSubCategory = async (req,res)=>{
     try {
+        const allSubCategory = await SubCategory.find({_id:{$in:req.body.catIds}});
         const updateManySubCategory = await SubCategory.updateMany({_id:{$in:req.body.catIds}},{status:false});
         if(updateManySubCategory){
+            allSubCategory.map((item)=>{
+                deactiveExCatBsOnSubCat(item.extraCategoryIds);
+            })
             req.flash('success',"Deactive all Selected Sub Category");
             console.log("Deactive all Selected Sub Category");
             return res.redirect('back');
@@ -195,9 +214,13 @@ module.exports.operandAllDactiveSubCategory = async (req,res)=>{
             const deletedSubCategory = await SubCategory.deleteMany({_id:{$in:req.body.catIds}});
             if(deletedSubCategory){
                 deactiveAllSubCategory.map(async (item)=>{
+                    // delete sub category id in category model 
                     const singleCategory = await Category.findById(item.categoryId);
                     singleCategory.subCategoryIds.splice(singleCategory.subCategoryIds.indexOf(item.categoryId),1);
                     await Category.findByIdAndUpdate(singleCategory._id,singleCategory);
+
+                    // delete all ExtraCategory base on sub category 
+                    deleteExCatBsOnSubCat(item.extraCategoryIds);
                 });
 
                 req.flash('success',"Delete all Selected Sub Category");

@@ -3,22 +3,22 @@ const LocalStrategy = require('passport-local').Strategy;
 const Admin = require('../models/AdminModel');
 const bcrypt = require('bcrypt');
 
-passport.use('adminLogin',new LocalStrategy({usernameField:'email'},async (email,password,done)=>{
-    console.log(email,password);
+passport.use('adminLogin',new LocalStrategy({usernameField:'email',passReqToCallback:true},async (req,email,password,done)=>{
     const adminData = await Admin.findOne({email:email,status:true});
     if(adminData){
         if(await bcrypt.compare(password,adminData.password)){
             return done(null,adminData);
         }else{
+            req.flash('error',"Invalid Password");
             return done(null,false);
         }
     }else{
+        req.flash('error',"Invalid Email");
         return done(null,false);
     }
 }));
 
 passport.serializeUser((user,done)=>{
-    console.log("serialized")
     return done(null,user.id);
 })
 

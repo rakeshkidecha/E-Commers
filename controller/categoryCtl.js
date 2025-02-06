@@ -1,12 +1,30 @@
 const Category = require('../models/CategoryModel');
 const SubCategory = require('../models/SubCategoryModel');
+const ExtraCategory = require('../models/ExtraCategoryModel');
 const {validationResult} = require('express-validator')
 
 async function changeSubCatStatusBaseOnCat(subCategoryIds){
+    const allSubCategory = await SubCategory.find({_id:{$in:subCategoryIds}});
     await SubCategory.updateMany({_id:{$in:subCategoryIds}},{status:false});
+    allSubCategory.map(async (item)=>{
+        deactiveExCatBsOnSubCat(item.extraCategoryIds);
+    });
 }
 async function deleteSubCatBaseOnCat(subCategoryIds){
+    const allSubCategory = await SubCategory.find({_id:{$in:subCategoryIds}});
     await SubCategory.deleteMany({_id:{$in:subCategoryIds}},{status:false});
+    allSubCategory.map(async (item)=>{
+        deleteExCatBsOnSubCat(item.extraCategoryIds);
+    });
+}
+
+
+async function deactiveExCatBsOnSubCat(extraCategoryIds) {
+    await ExtraCategory.updateMany({_id:{$in:extraCategoryIds}},{status:false});
+}
+
+async function deleteExCatBsOnSubCat(extraCategoryIds) {
+    await ExtraCategory.deleteMany({_id:{$in:extraCategoryIds}});
 }
 
 module.exports.addCategory = async (req,res)=>{
