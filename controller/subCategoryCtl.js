@@ -94,6 +94,14 @@ module.exports.viewSubCategory = async(req,res)=>{
 module.exports.changeSubCategoryStatus = async(req,res)=>{
     try {
         const {id,status} = req.params;
+        if(status=='true'){
+            const singleSubcategory = await SubCategory.findById(id);
+            const singleCategory = await Category.findById(singleSubcategory.categoryId);
+            if(!singleCategory.status){
+                req.flash('error',"The Category is not active");
+                return res.redirect('back');
+            }
+        };
 
         const updatedSubCategory = await SubCategory.findByIdAndUpdate(id,{status:status});
         if(updatedSubCategory){
@@ -197,10 +205,20 @@ module.exports.deactiveAllSubCategory = async (req,res)=>{
 module.exports.operandAllDactiveSubCategory = async (req,res)=>{
     try {
 
+        const deactiveAllSubCategory = await SubCategory.find({_id:{$in:req.body.catIds}}).populate('categoryId').exec();
+
         if(req.body.activeAll){
-            const updateManySubCategory = await SubCategory.updateMany({_id:{$in:req.body.catIds}},{status:true});
+
+            const subCategoryIds = deactiveAllSubCategory.map((item)=>{
+                console.log(item);
+                if(item.categoryId.status){
+                    return item._id;
+                }
+            });
+            console.log(subCategoryIds);
+            const updateManySubCategory = await SubCategory.updateMany({_id:{$in:subCategoryIds}},{status:true});
             if(updateManySubCategory){
-                req.flash('success',"Active all Selected Sub Category");
+                req.flash('success',"Active all Selected Sub Category Expect the subCateory Category not active");
                 console.log("Active all Selected Sub Category");
                 return res.redirect('back');
             }else{
@@ -209,7 +227,6 @@ module.exports.operandAllDactiveSubCategory = async (req,res)=>{
                 return res.redirect('back');
             }
         }else{
-            const deactiveAllSubCategory = await SubCategory.find({_id:{$in:req.body.catIds}});
 
             const deletedSubCategory = await SubCategory.deleteMany({_id:{$in:req.body.catIds}});
             if(deletedSubCategory){
@@ -236,6 +253,6 @@ module.exports.operandAllDactiveSubCategory = async (req,res)=>{
     } catch (err) {
         req.flash('error',"Somthing Wrong")
         console.log("Some thing wrong",err);
-        return res.redirect('/subCategory');
+        return res.redirect('back');
     }
 }

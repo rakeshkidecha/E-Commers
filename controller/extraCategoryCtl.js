@@ -95,6 +95,14 @@ module.exports.viewExtraCategory = async (req,res)=>{
 
 module.exports.changeExtraCategoryStatus = async(req,res)=>{
     try {
+        const signleExtraCategory = await ExtraCategory.findById(req.params.id).populate('subCategoryId').exec();
+        if(req.params.status == 'true'){
+            if(!signleExtraCategory.subCategoryId.status){
+                req.flash('error',"The subCategory not Active")
+                return res.redirect('back');
+            }
+        }
+
         const changeStatus = await ExtraCategory.findByIdAndUpdate(req.params.id,{status:req.params.status});
         if(changeStatus){
             req.flash('success',"Extra Category Status Change Successfully");
@@ -181,7 +189,6 @@ module.exports.editExtraCategory = async(req,res)=>{
 
 module.exports.deactiveAllExtraCategory  = async (req,res)=>{
     try {
-        console.log(req.body.catIds);
         const deactiveExtraCategory = await ExtraCategory.updateMany({_id:{$in:req.body.catIds}},{status:false});
         if(deactiveExtraCategory){
             req.flash('success',"All Selected Extra Category Deactivate");
@@ -201,10 +208,18 @@ module.exports.deactiveAllExtraCategory  = async (req,res)=>{
 
 module.exports.operandAllDactiveExtraCategory = async(req,res)=>{
     try {
+        const deactiveAllExtraCategory = await ExtraCategory.find({_id:{$in:req.body.catIds}}).populate('subCategoryId').exec();
         if(req.body.activeAll){
-            const deactiveExtraCategory = await ExtraCategory.updateMany({_id:{$in:req.body.catIds}},{status:true});
+
+            const extraCategoryIds = deactiveAllExtraCategory.map((item)=>{
+                if(item.subCategoryId.status){
+                    return item._id;
+                }
+            })
+
+            const deactiveExtraCategory = await ExtraCategory.updateMany({_id:{$in:extraCategoryIds}},{status:true});
             if(deactiveExtraCategory){
-                req.flash('success',"All Selected Extra Category Activate");
+                req.flash('success',"All Selected Extra Category Activate Expect if them Sub category are not active");
                 console.log("All Selected Extra Category Activate");
                 return res.redirect('back');
             }else{
@@ -213,7 +228,6 @@ module.exports.operandAllDactiveExtraCategory = async(req,res)=>{
                 return res.redirect('back');
             }
         }else{
-            const deactiveAllExtraCategory = await ExtraCategory.find({_id:{$in:req.body.catIds}});
             if(deactiveAllExtraCategory){
                 deactiveAllExtraCategory.map( async (item)=>{
                     const subCategory = await SubCategory.findById(item.subCategoryId);
