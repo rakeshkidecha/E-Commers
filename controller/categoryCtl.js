@@ -1,31 +1,10 @@
 const Category = require('../models/CategoryModel');
 const SubCategory = require('../models/SubCategoryModel');
 const ExtraCategory = require('../models/ExtraCategoryModel');
+const Type = require('../models/TypeModel');
 const {validationResult} = require('express-validator')
+const ORM = require('../services/ORM');
 
-async function changeSubCatStatusBaseOnCat(subCategoryIds){
-    const allSubCategory = await SubCategory.find({_id:{$in:subCategoryIds}});
-    await SubCategory.updateMany({_id:{$in:subCategoryIds}},{status:false});
-    allSubCategory.map(async (item)=>{
-        deactiveExCatBsOnSubCat(item.extraCategoryIds);
-    });
-}
-async function deleteSubCatBaseOnCat(subCategoryIds){
-    const allSubCategory = await SubCategory.find({_id:{$in:subCategoryIds}});
-    await SubCategory.deleteMany({_id:{$in:subCategoryIds}},{status:false});
-    allSubCategory.map(async (item)=>{
-        deleteExCatBsOnSubCat(item.extraCategoryIds);
-    });
-}
-
-
-async function deactiveExCatBsOnSubCat(extraCategoryIds) {
-    await ExtraCategory.updateMany({_id:{$in:extraCategoryIds}},{status:false});
-}
-
-async function deleteExCatBsOnSubCat(extraCategoryIds) {
-    await ExtraCategory.deleteMany({_id:{$in:extraCategoryIds}});
-}
 
 module.exports.addCategory = async (req,res)=>{
     try {
@@ -119,7 +98,7 @@ module.exports.changeCategoryStatus = async (req,res)=>{
         const categoryUpdateStatus = await Category.findByIdAndUpdate(id,{status:status});
         if(categoryUpdateStatus){
             if(status=="false"){
-                changeSubCatStatusBaseOnCat(categoryUpdateStatus.subCategoryIds);
+                ORM.opration.changeSubCatStatusBaseOnCat(categoryUpdateStatus.subCategoryIds);
             }
             req.flash('success',"Category Status Updated Successfully");
             console.log('Category Status Updated Successfully')
@@ -141,7 +120,7 @@ module.exports.deleteCategory = async (req,res)=>{
     try {
         const deleteCategory = await Category.findByIdAndDelete(req.params.id);
         if(deleteCategory){
-            deleteSubCatBaseOnCat(deleteCategory.subCategoryIds);
+            ORM.opration.deleteSubCatBaseOnCat(deleteCategory.subCategoryIds);
             req.flash('success',"Category Deleted Successfully");
             console.log('Category Deleted Successfully')
             return res.redirect('back');
@@ -183,7 +162,7 @@ module.exports.deactiveAllCategory = async (req,res)=>{
 
         if(updateMany){
             allActiveCategory.map(async(item)=>{
-                changeSubCatStatusBaseOnCat(item.subCategoryIds);
+                ORM.opration.changeSubCatStatusBaseOnCat(item.subCategoryIds);
             })
             req.flash('success',"All Selected Category Deactive Successfully");
             console.log('All Selected Category Deactive Successfully')
@@ -218,7 +197,7 @@ module.exports.operandAllDactiveCategory = async(req,res)=>{
             const deleteMany = await Category.deleteMany({_id:{$in:req.body.catIds}});
             if(deleteMany){
                 allDeactiveCat.map((item)=>{
-                    deleteSubCatBaseOnCat(item.subCategoryIds);
+                    ORM.opration.deleteSubCatBaseOnCat(item.subCategoryIds);
                 })
                 req.flash('success',"All Selected Category Delete Successfully");
                 console.log('All Selected Category Delete Successfully')

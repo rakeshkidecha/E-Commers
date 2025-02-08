@@ -1,6 +1,8 @@
 const Category = require('../models/CategoryModel');
 const SubCategory = require('../models/SubCategoryModel');
 const ExtraCategory = require('../models/ExtraCategoryModel');
+const Type = require('../models/TypeModel');
+const ORM = require('../services/ORM');
 
 module.exports.addExtraCategory = async(req,res)=>{
     try {
@@ -105,6 +107,11 @@ module.exports.changeExtraCategoryStatus = async(req,res)=>{
 
         const changeStatus = await ExtraCategory.findByIdAndUpdate(req.params.id,{status:req.params.status});
         if(changeStatus){
+
+            if(req.params.status == 'false'){
+                ORM.opration.deativeTypeBsOnExCat(changeStatus.typeIds);
+            }
+
             req.flash('success',"Extra Category Status Change Successfully");
             console.log("Extra Category Status Change Successfully")
             return res.redirect('back');
@@ -122,11 +129,14 @@ module.exports.changeExtraCategoryStatus = async(req,res)=>{
 
 module.exports.deleteExtraCategory = async(req,res)=>{
     try {
-        const deleteDeleteExtraCategory = await ExtraCategory.findByIdAndDelete(req.params.id);
-        if(deleteDeleteExtraCategory){
-            const subCategory = await SubCategory.findById(deleteDeleteExtraCategory.subCategoryId);
-            subCategory.extraCategoryIds.splice(subCategory.extraCategoryIds.indexOf(deleteDeleteExtraCategory._id),1);
+        const deleteExtraCategory = await ExtraCategory.findByIdAndDelete(req.params.id);
+        if(deleteExtraCategory){
+            const subCategory = await SubCategory.findById(deleteExtraCategory.subCategoryId);
+            subCategory.extraCategoryIds.splice(subCategory.extraCategoryIds.indexOf(deleteExtraCategory._id),1);
             await SubCategory.findByIdAndUpdate(subCategory._id,subCategory); 
+
+            // delete type who  reqlated this sub category
+            ORM.opration.deleteTypeBsOnExCat(deleteExtraCategory.typeIds);
 
             req.flash('success',"Extra Category Delete Successfully");
             console.log("Extra Category Delete Successfully");
@@ -189,8 +199,13 @@ module.exports.editExtraCategory = async(req,res)=>{
 
 module.exports.deactiveAllExtraCategory  = async (req,res)=>{
     try {
-        const deactiveExtraCategory = await ExtraCategory.updateMany({_id:{$in:req.body.catIds}},{status:false});
-        if(deactiveExtraCategory){
+        const deactiveAllExtraCategory = await ExtraCategory.find({_id:{$in:req.body.catIds}})
+        const deactiveExCat = await ExtraCategory.updateMany({_id:{$in:req.body.catIds}},{status:false});
+        if(deactiveExCat){
+            deactiveAllExtraCategory.map((item)=>{
+                ORM.opration.deativeTypeBsOnExCat(item.typeIds);
+            });
+
             req.flash('success',"All Selected Extra Category Deactivate");
             console.log("All Selected Extra Category Deactivate");
             return res.redirect('back');
@@ -215,7 +230,8 @@ module.exports.operandAllDactiveExtraCategory = async(req,res)=>{
                 if(item.subCategoryId.status){
                     return item._id;
                 }
-            })
+            });
+
 
             const deactiveExtraCategory = await ExtraCategory.updateMany({_id:{$in:extraCategoryIds}},{status:true});
             if(deactiveExtraCategory){
@@ -233,7 +249,12 @@ module.exports.operandAllDactiveExtraCategory = async(req,res)=>{
                     const subCategory = await SubCategory.findById(item.subCategoryId);
                     subCategory.extraCategoryIds.splice(subCategory.extraCategoryIds.indexOf(item.id),1);
                     await SubCategory.findByIdAndUpdate(subCategory._id,subCategory);
-                })
+
+                    
+                    // delete type who  reqlated this sub category
+                    ORM.opration.deleteTypeBsOnExCat(item.typeIds);
+
+                });
             }
 
             const deleteExtraCategory = await ExtraCategory.deleteMany({_id:{$in:req.body.catIds}});

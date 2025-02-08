@@ -1,0 +1,138 @@
+
+<%- include('../layouts/header') %>
+
+<div class="content-wrapper"> 
+  <div class="mb-4 d-flex align-items-center">
+    <form>
+      <input type="text" name="searchValue" value="<%= searchValue %>"  class="py-1 px-3 border rounded-1" placeholder="searching here" />
+      <input type="date" class="py-1 px-3 border rounded-1" name="date" value="<%= date && new Date(date).toISOString().split('T')[0] %>" />
+      <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <a href="/type/viewType" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrows-rotate"></i></a>
+    </form>
+    <div class="dropdown ms-2">
+      <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuSizeButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> ShortBy </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuSizeButton1">
+        <a class="dropdown-item" href="?sort=<%= sort==1?-1:1 %>&&sortType=typeName<%= searchValue?'&searchValue='+searchValue:'' %><%= date?'&date='+date:'' %>">Name ↑↓</a>
+        <a class="dropdown-item" href="?sort=<%= sort==1?-1:1 %>&&sortType=createdAt<%= searchValue?'&searchValue='+searchValue:'' %><%= date?'&date='+date:'' %>">Date ↑↓</a>
+      </div>
+    </div>
+  </div>
+    <div class="row">
+      <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <form method="post" action="/type/deactiveAllType">
+            <h4 class="card-title d-flex align-items-center justify-content-between">Active Extra Category <button type="submit" style="font-size: 12px;" class="btn btn-primary p-2 ms-2 hideBtn" id="allDeactiveBtn"><i class="fa-solid fa-ban"></i></button></h4>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th class="d-flex align-items-center">
+                      <input type="checkbox" id="checkAll" />
+                    </th>
+                    <th style="width: 30px;">#</th>
+                    <th>Extra Category</th>
+                    <th>Category</th>
+                    <th>Sub Category</th>
+                    <th>Extra Category</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% let count = 0;
+                  allTypes.map((item)=>{
+                    if(item.status) { %>
+                    <tr>
+                      <td><input type="checkbox" name="typeIds" class="activeCat" value="<%= item._id %>"/></td>
+                      <td> <%= count++ %></td>
+                      <td> <%= item.typeName %> </td>
+                      <td> <%= item.categoryId.categoryName%> </td>
+                      <td> <%= item.subCategoryId.subCategoryName %> </td>
+                      <td> <%= item.extraCategoryId.extraCategoryName %> </td>
+                      <td> 
+                          <div class="d-flex">
+                            <a href="/type/changeTypeStatus/<%= item.id %>/false" class="nav-link mx-2"><i class="fa-solid fa-ban"></i></a>
+                            <a href="/type/updateType/<%= item.id %>" class="nav-link mx-2"><i class="fa-solid fa-pen-to-square"></i></a>
+                          </div>
+                      </td>
+                    </tr>
+                  <% }}) %>
+                </tbody>
+              </table>
+            </div>
+          </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <form method="post" action="/type/operandAllDactiveType">
+            <div class="card-title d-flex align-items-center justify-content-between">
+              <h4>Deactive Sub Category</h4>
+              <div>
+                <button type="submit" name="activeAll" value="activeAll" style="font-size: 12px;padding: 6px;" class="btn btn-primary ms-2 hideBtn" id="allActiveBtn" ><i class="mdi mdi-keyboard-return"></i></button>
+                <button type="submit" name="deleteAll" value="deleteAll" style="font-size: 12px;" class="btn btn-primary p-2 ms-2 hideBtn" id="allDeleteBtn"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th class="d-flex align-items-center">
+                      <input type="checkbox" id="checkAllDeactive" />
+                    </th>
+                    <th style="width: 30px;">#</th>
+                    <th>Extra Category</th>
+                    <th>Category</th>
+                    <th>Sub Category</th>
+                    <th>Extra Category</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% count = 0;
+                  allTypes.map((item)=>{
+                    if(!item.status) {%>
+                    <tr>
+                      <td><input type="checkbox" name="typeIds" class="deactiveCat" value="<%= item._id %>"/></td>
+                      <td> <%= count++ %></td>
+                      <td> <%= item.typeName %> </td>
+                      <td> <%= item.categoryId.categoryName%> </td>
+                      <td> <%= item.subCategoryId.subCategoryName %> </td>
+                      <td> <%= item.extraCategoryId.extraCategoryName %> </td>
+                      </td>
+                      <td> 
+                          <div class="d-flex">
+                            <a href="/type/changeTypeStatus/<%= item.id %>/true" class="nav-link mx-2"><i class="mdi mdi-keyboard-return" style="font-size: 18px;"></i></a>
+                            <a href="/type/deleteType/<%= item.id %>" class="nav-link mx-2"><i class="fa-solid fa-trash"></i></a>
+                            <a href="/type/updateType/<%= item.id %>" class="nav-link mx-2"><i class="fa-solid fa-pen-to-square"></i></a>
+                          </div>
+                      </td>
+                    </tr>
+                  <% }}) %>
+                </tbody>
+              </table>
+            </div>
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../layouts/footer') %>
+
+  <script>
+
+    // $('#allDeactiveBtn').hide();
+    $("#checkAll").click(function(){
+      $('#allDeactiveBtn').toggleClass('hideBtn');
+      $('.activeCat').not(this).prop('checked', this.checked);
+    });
+    $("#checkAllDeactive").click(function(){
+      $('#allActiveBtn').toggleClass('hideBtn');
+      $('#allDeleteBtn').toggleClass('hideBtn');
+        $('.deactiveCat').not(this).prop('checked', this.checked);
+    });
+</script>

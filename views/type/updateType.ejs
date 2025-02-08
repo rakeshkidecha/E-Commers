@@ -1,0 +1,91 @@
+<%- include('../layouts/header') %>
+
+
+<div class="content-wrapper">
+    <div class="row">
+      <!-- ----------------------------------------------------------------------------- -->
+      <div class="col-7 mx-auto grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Update Type</h4>
+            <p class="card-description">Update Type </p>
+            <form method="post" action="/type/editType" class="forms-sample">
+                <input type="hidden" name="id" value="<%= singleType._id %>"/>
+              <div class="form-group">
+                  <label for="exampleInputCity1">*Category:- </label>
+                  <select name="categoryId" id="categoryId" class="form-select text-dark">
+                      <option value="">--Select Category--</option>
+                      <% allCategory.map((item)=>{ %>
+                          <option value="<%= item._id %>" <%= item.id== singleType.categoryId ?'selected':'' %>><%= item.categoryName %></option>
+                      <% }) %>
+                  </select>
+              </div>
+              <div class="form-group">
+                  <label for="exampleInputCity1">*Sub Category:- </label>
+                  <select name="subCategoryId" id="subCategoryId" class="form-select text-dark">
+                    <option value="">--Select Sub Category--</option>
+                    <% allSubCatBaseCat.map((item)=>{ %>
+                        <option value="<%= item._id %>"  <%= item.id== singleType.subCategoryId ?'selected':'' %>><%= item.subCategoryName %></option>
+                    <% }) %>
+                  </select>
+              </div>
+              <div class="form-group">
+                  <label for="exampleInputCity1">*Extra Category:- </label>
+                  <select name="extraCategoryId" id="extraCategoryId" class="form-select text-dark">
+                    <option value="">--Select Extra Category--</option>
+                    <% allExCatBaseSubCat.map((item)=>{ %>
+                        <option value="<%= item._id %>"  <%= item.id== singleType.extraCategoryId ?'selected':'' %>><%= item.extraCategoryName %></option>
+                    <% }) %>
+                  </select>
+              </div>
+              <div class="form-group">
+                <label for="exampleInputName1">*Type Name:- </label>
+                <input type="text" name="typeName" value="<%= singleType.typeName %>" class="form-control" id="exampleInputName1" placeholder="Extra Category Name">
+              </div>
+              <button type="submit" class="btn btn-primary me-2">Update</button>
+              <a href="/type" class="btn btn-light">Cancel</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../layouts/footer') %>
+  <script>
+        // get sub  category 
+        document.querySelector('#categoryId').addEventListener('change',(e)=>{
+            $.ajax({
+                type:'GET',
+                url:`/type/getSubCategory/${e.target.value}`,
+                success : (res)=>{
+                    let ihtml = '<option value="">--Select Sub Category--</option>';
+                    res.map((item)=>{
+                        ihtml+=`<option value="${item._id}"> ${item.subCategoryName }</option>`
+                    })
+                    document.querySelector('#subCategoryId').innerHTML = ihtml;
+                },
+                error :(err)=>{
+                    console.log(err);
+                }
+            });
+        });
+
+        // get extra category 
+        document.querySelector('#subCategoryId').addEventListener('change',(e)=>{
+            $.ajax({
+                type:'GET',
+                url:`/type/getExtraCategory/${e.target.value}`,
+                success : (res)=>{
+                    let ihtml = '<option value="">--Select Extra Category--</option>';
+                    res.map((item)=>{
+                        ihtml+=`<option value="${item._id}"> ${item.extraCategoryName }</option>`
+                    })
+                    document.querySelector('#extraCategoryId').innerHTML = ihtml;
+                },
+                error :(err)=>{
+                    console.log(err);
+                }
+            });
+        });
+  </script>

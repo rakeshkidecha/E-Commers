@@ -1,14 +1,9 @@
 const Category = require('../models/CategoryModel');
 const SubCategory = require('../models/SubCategoryModel');
 const ExtraCategory = require('../models/ExtraCategoryModel');
+const Type = require('../models/TypeModel');
+const ORM = require('../services/ORM');
 
-async function deactiveExCatBsOnSubCat(extraCategoryIds) {
-    await ExtraCategory.updateMany({_id:{$in:extraCategoryIds}},{status:false});
-}
-
-async function deleteExCatBsOnSubCat(extraCategoryIds) {
-    await ExtraCategory.deleteMany({_id:{$in:extraCategoryIds}});
-}
 
 module.exports.addSubCategory = async (req,res)=>{
     try {   
@@ -106,7 +101,7 @@ module.exports.changeSubCategoryStatus = async(req,res)=>{
         const updatedSubCategory = await SubCategory.findByIdAndUpdate(id,{status:status});
         if(updatedSubCategory){
             if(status=='false'){
-                deactiveExCatBsOnSubCat(updatedSubCategory.extraCategoryIds);
+                ORM.opration.deactiveExCatBsOnSubCat(updatedSubCategory.extraCategoryIds);
             }
             req.flash('success',"Sub Category Status Updated");
             console.log("Sub Category Status Updated");
@@ -134,7 +129,7 @@ module.exports.deleteSubCategory = async(req,res)=>{
             await Category.findByIdAndUpdate(singleCategory._id,singleCategory);
 
             // delete all ExtraCategory base on sub category 
-            deleteExCatBsOnSubCat(deletedSubCategory.extraCategoryIds);
+            ORM.opration.deleteExCatBsOnSubCat(deletedSubCategory.extraCategoryIds);
 
             req.flash('success',"Sub Category Deleted");
             console.log("Sub Category Deleted");
@@ -185,7 +180,7 @@ module.exports.deactiveAllSubCategory = async (req,res)=>{
         const updateManySubCategory = await SubCategory.updateMany({_id:{$in:req.body.catIds}},{status:false});
         if(updateManySubCategory){
             allSubCategory.map((item)=>{
-                deactiveExCatBsOnSubCat(item.extraCategoryIds);
+                ORM.opration.deactiveExCatBsOnSubCat(item.extraCategoryIds);
             })
             req.flash('success',"Deactive all Selected Sub Category");
             console.log("Deactive all Selected Sub Category");
@@ -237,7 +232,7 @@ module.exports.operandAllDactiveSubCategory = async (req,res)=>{
                     await Category.findByIdAndUpdate(singleCategory._id,singleCategory);
 
                     // delete all ExtraCategory base on sub category 
-                    deleteExCatBsOnSubCat(item.extraCategoryIds);
+                    ORM.opration.deleteExCatBsOnSubCat(item.extraCategoryIds);
                 });
 
                 req.flash('success',"Delete all Selected Sub Category");

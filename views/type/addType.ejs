@@ -7,9 +7,9 @@
       <div class="col-7 mx-auto grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
-            <h4 class="card-title">Add Extra Category</h4>
-            <p class="card-description">Add Extra Category </p>
-            <form method="post" action="/extraCategory/insertExtraCategory" class="forms-sample">
+            <h4 class="card-title">Add Type</h4>
+            <p class="card-description">Add Type </p>
+            <form method="post" action="/type/insertType" class="forms-sample">
               <div class="form-group">
                   <label for="exampleInputCity1">*Category:- </label>
                   <select name="categoryId" id="categoryId" class="form-select text-dark">
@@ -26,14 +26,17 @@
                   </select>
               </div>
               <div class="form-group">
-                <label for="exampleInputName1">*Extra Category Name:- </label>
-                <input type="text" name="extraCategoryName" value="<%= oldValue && oldValue.categoryName %>"  class="form-control" id="exampleInputName1" placeholder="Extra Category Name">
-                <% if(errors&&errors.categoryName){ %>
-                  <p class="text-danger">*<%= errors.categoryName.msg %></p>
-                <% } %>
+                  <label for="exampleInputCity1">*Extra Category:- </label>
+                  <select name="extraCategoryId" id="extraCategoryId" class="form-select text-dark">
+                    <option value="">--Select Extra Category--</option>
+                  </select>
+              </div>
+              <div class="form-group">
+                <label for="exampleInputName1">*Type Name:- </label>
+                <input type="text" name="typeName" class="form-control" id="exampleInputName1" placeholder="Extra Category Name">
               </div>
               <button type="submit" class="btn btn-primary me-2">Add</button>
-              <a href="/extraCategory" class="btn btn-light">Cancel</a>
+              <a href="/type" class="btn btn-light">Cancel</a>
             </form>
           </div>
         </div>
@@ -43,16 +46,35 @@
 
   <%- include('../layouts/footer') %>
   <script>
+        // get sub  category 
         document.querySelector('#categoryId').addEventListener('change',(e)=>{
             $.ajax({
                 type:'GET',
-                url:`/extraCategory/getSubCategory/${e.target.value}`,
+                url:`/type/getSubCategory/${e.target.value}`,
                 success : (res)=>{
                     let ihtml = '<option value="">--Select Sub Category--</option>';
                     res.map((item)=>{
                         ihtml+=`<option value="${item._id}"> ${item.subCategoryName }</option>`
                     })
                     document.querySelector('#subCategoryId').innerHTML = ihtml;
+                },
+                error :(err)=>{
+                    console.log(err);
+                }
+            });
+        });
+
+        // get extra category 
+        document.querySelector('#subCategoryId').addEventListener('change',(e)=>{
+            $.ajax({
+                type:'GET',
+                url:`/type/getExtraCategory/${e.target.value}`,
+                success : (res)=>{
+                    let ihtml = '<option value="">--Select Extra Category--</option>';
+                    res.map((item)=>{
+                        ihtml+=`<option value="${item._id}"> ${item.extraCategoryName }</option>`
+                    })
+                    document.querySelector('#extraCategoryId').innerHTML = ihtml;
                 },
                 error :(err)=>{
                     console.log(err);

@@ -16,7 +16,7 @@
                   <select name="categoryId" id="categoryId" class="form-select text-dark">
                       <option value="">--Select Category--</option>
                       <% allCategory.map((item)=>{ %>
-                          <option value="<%= item._id %>"<%= signleExtraCategory.categoryId==item.id?'selected':'' %> ><%= item.categoryName %></option>
+                          <option value="<%= item._id %>" <%= signleExtraCategory.categoryId==item.id?'selected':'' %> ><%= item.categoryName %></option>
                       <% }) %>
                   </select>
               </div>
