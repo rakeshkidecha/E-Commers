@@ -21,7 +21,7 @@
               </div>
               <div class="form-group">
                 <label for="exampleInputName1">*Sub Category Name:- </label>
-                <input type="text" name="subCategoryName" value="<%= oldValue && oldValue.categoryName %>"  class="form-control" id="exampleInputName1" placeholder="First Name">
+                <input type="text" name="subCategoryName" value="<%= oldValue && oldValue.categoryName %>"  class="form-control" id="exampleInputName1" placeholder="Sub Category Name">
                 <% if(errors&&errors.categoryName){ %>
                   <p class="text-danger">*<%= errors.categoryName.msg %></p>
                 <% } %>

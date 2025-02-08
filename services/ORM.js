@@ -2,6 +2,7 @@ const Category = require('../models/CategoryModel');
 const SubCategory = require('../models/SubCategoryModel');
 const ExtraCategory = require('../models/ExtraCategoryModel');
 const Type = require('../models/TypeModel');
+const Brand = require('../models/BrandModel');
 
 async function changeSubCatStatusBaseOnCat(subCategoryIds){
     const allSubCategory = await SubCategory.find({_id:{$in:subCategoryIds}});
@@ -25,6 +26,7 @@ async function deactiveExCatBsOnSubCat(extraCategoryIds) {
     await ExtraCategory.updateMany({_id:{$in:extraCategoryIds}},{status:false});
     allExtraCategory.map((item)=>{
         deativeTypeBsOnExCat(item.typeIds);
+        deativeBrandBsOnExCat(item.brandIds);
     })
 }
 
@@ -33,6 +35,7 @@ async function deleteExCatBsOnSubCat(extraCategoryIds) {
     await ExtraCategory.deleteMany({_id:{$in:extraCategoryIds}});
     allExtraCategory.map((item)=>{
         deleteTypeBsOnExCat(item.typeIds);
+        deleteBrandBsOnExCat(item.brandIds);
     });
 }
 
@@ -44,6 +47,15 @@ async function deleteTypeBsOnExCat(typeIds) {
     await Type.deleteMany({_id:{$in:typeIds}});
 };
 
+async function deativeBrandBsOnExCat(brandIds) {
+    console.log(brandIds);
+    await Brand.updateMany({_id:{$in:brandIds}},{status:false});
+};
+
+async function deleteBrandBsOnExCat(brandIds) {
+    await Brand.deleteMany({_id:{$in:brandIds}});
+};
+
 
 exports.opration = {
     changeSubCatStatusBaseOnCat,
@@ -52,4 +64,6 @@ exports.opration = {
     deleteExCatBsOnSubCat,
     deativeTypeBsOnExCat,
     deleteTypeBsOnExCat,
+    deativeBrandBsOnExCat,
+    deleteBrandBsOnExCat
 }

@@ -12,7 +12,7 @@
             <form method="post" action="/category/insertCategory" class="forms-sample">
               <div class="form-group">
                 <label for="exampleInputName1">*Category Name:- </label>
-                <input type="text" name="categoryName" value="<%= oldValue && oldValue.categoryName %>"  class="form-control" id="exampleInputName1" placeholder="First Name">
+                <input type="text" name="categoryName" value="<%= oldValue && oldValue.categoryName %>"  class="form-control" id="exampleInputName1" placeholder="Category Name">
                 <% if(errors&&errors.categoryName){ %>
                   <p class="text-danger">*<%= errors.categoryName.msg %></p>
                 <% } %>

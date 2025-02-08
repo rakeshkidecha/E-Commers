@@ -110,6 +110,7 @@ module.exports.changeExtraCategoryStatus = async(req,res)=>{
 
             if(req.params.status == 'false'){
                 ORM.opration.deativeTypeBsOnExCat(changeStatus.typeIds);
+                ORM.opration.deativeBrandBsOnExCat(changeStatus.brandIds);
             }
 
             req.flash('success',"Extra Category Status Change Successfully");
@@ -135,8 +136,9 @@ module.exports.deleteExtraCategory = async(req,res)=>{
             subCategory.extraCategoryIds.splice(subCategory.extraCategoryIds.indexOf(deleteExtraCategory._id),1);
             await SubCategory.findByIdAndUpdate(subCategory._id,subCategory); 
 
-            // delete type who  reqlated this sub category
+            // delete type and Brand  who  related this sub category
             ORM.opration.deleteTypeBsOnExCat(deleteExtraCategory.typeIds);
+            ORM.opration.deleteBrandBsOnExCat(deleteExtraCategory.brandIds);
 
             req.flash('success',"Extra Category Delete Successfully");
             console.log("Extra Category Delete Successfully");
@@ -204,6 +206,7 @@ module.exports.deactiveAllExtraCategory  = async (req,res)=>{
         if(deactiveExCat){
             deactiveAllExtraCategory.map((item)=>{
                 ORM.opration.deativeTypeBsOnExCat(item.typeIds);
+                ORM.opration.deativeBrandBsOnExCat(item.brandIds);
             });
 
             req.flash('success',"All Selected Extra Category Deactivate");
@@ -251,9 +254,9 @@ module.exports.operandAllDactiveExtraCategory = async(req,res)=>{
                     await SubCategory.findByIdAndUpdate(subCategory._id,subCategory);
 
                     
-                    // delete type who  reqlated this sub category
+                    // delete type and brand who  related this sub category
                     ORM.opration.deleteTypeBsOnExCat(item.typeIds);
-
+                    ORM.opration.deleteBrandBsOnExCat(item.brandIds);
                 });
             }
 
