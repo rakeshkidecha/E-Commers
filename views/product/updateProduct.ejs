@@ -1,0 +1,178 @@
+<%- include('../layouts/header') %>
+
+
+<div class="content-wrapper">
+    <div class="row">
+      <!-- ----------------------------------------------------------------------------- -->
+      <div class="col-7 mx-auto grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Update Product</h4>
+            <p class="card-description">Update Product </p>
+            <form method="post" action="/product/editProduct" enctype="multipart/form-data" class="forms-sample">
+                <input type="hidden" name="id" value="<%= singleProduct._id %>" />
+              <div class="form-group">
+                  <label for="exampleInputCity1">*Category:- </label>
+                  <select name="categoryId" id="categoryId" class="form-select text-dark">
+                      <option value="">--Select Category--</option>
+                      <% allCategory.map((item)=>{ %>
+                          <option value="<%= item._id %>" <%= item.id==singleProduct.categoryId?'selected':'' %>><%= item.categoryName %></option>
+                      <% }) %>
+                  </select>
+              </div>
+
+              <div class="form-group">
+                  <label for="exampleInputCity1">*Sub Category:- </label>
+                  <select name="subCategoryId" id="subCategoryId" class="form-select text-dark">
+                    <option value="">--Select Sub Category--</option>
+                    <% allSubCatBaseCat.map((item)=>{ %>
+                        <option value="<%= item._id %>" <%= item.id==singleProduct.subCategoryId?'selected':'' %>><%= item.subCategoryName %></option>
+                    <% }) %>
+                  </select>
+              </div>
+
+              <div class="form-group">
+                  <label for="exampleInputCity1">*Extra Category:- </label>
+                  <select name="extraCategoryId" id="extraCategoryId" class="form-select text-dark">
+                    <option value="">--Select Extra Category--</option>
+                    <% allExCatBaseSubCat.map((item)=>{ %>
+                        <option value="<%= item._id %>" <%= item.id==singleProduct.extraCategoryId?'selected':'' %>><%= item.extraCategoryName %></option>
+                    <% }) %>
+                  </select>
+              </div>
+
+            <div class="form-group">
+                <label for="exampleInputCity1">*Type:- </label>
+                <select name="typeId" id="typeId" class="form-select text-dark">
+                    <option value="">--Select Type--</option>
+                    <% allTypeBsOnExCat.map((item)=>{ %>
+                        <option value="<%= item._id %>" <%= item.id==singleProduct.typeId?'selected':'' %>><%= item.typeName %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="exampleInputCity1">*Brand:- </label>
+                <select name="brandId" id="brandId" class="form-select text-dark">
+                    <option value="">--Select Brand--</option>
+                    <% allBrandBsOnExCat.map((item)=>{ %>
+                        <option value="<%= item._id %>" <%= item.id==singleProduct.brandId?'selected':'' %>><%= item.brandName %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+              <div class="form-group">
+                <label for="exampleInputName1">*Title:- </label>
+                <input type="text" name="title" value="<%= singleProduct.title %>" class="form-control" id="exampleInputName1" placeholder="Extra title">
+              </div>
+
+              <div class="form-group">
+                <label for="exampleInputName1">*Price:- </label>
+                <input type="number" name="price" value="<%= singleProduct.price %>" class="form-control" id="exampleInputName1" placeholder="Extra title">
+              </div>
+
+              <div class="form-group">
+                <label for="exampleInputName1">*Discount:- </label>
+                <input type="text" name="discount" value="<%= singleProduct.discount %>" class="form-control" id="exampleInputName1" placeholder="Extra Discount">
+              </div>
+
+              <div class="form-group">
+                <label>*Cover Image:- </label>
+                <input type="file" name="coverImage" class="form-control">
+                <img src="<%= singleProduct.coverImage %>" alt="coverImage" title="coverImage" width="100px" class="mt-2" />
+              </div>
+
+              <div class="form-group">
+                <label>*Product Images:- </label>
+                <input type="file" name="productImages" multiple class="form-control">
+                <div class="row g-1 mt-2">
+                    <% singleProduct.productImages.map((item)=>{ %>
+                        <div class="col-3">
+                            <img src="<%= item %>" alt="ProductImage" title="ProductImage" width="100%" height="100px" style="object-fit: contain;" />
+                        </div>
+                    <% }) %>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="exampleTextarea1">*Description:- </label>
+                <textarea class="form-control" name="description" id="exampleTextarea1" placeholder="Product Description" rows="4"><%= singleProduct.description %></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary me-2">Update</button>
+              <a href="/product/viewProduct" class="btn btn-light">Cancel</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../layouts/footer') %>
+  <script>
+        // get sub  category 
+        document.querySelector('#categoryId').addEventListener('change',(e)=>{
+            $.ajax({
+                type:'GET',
+                url:`/product/getSubCategory/${e.target.value}`,
+                success : (res)=>{
+                    let ihtml = '<option value="">--Select Sub Category--</option>';
+                    res.map((item)=>{
+                        ihtml+=`<option value="${item._id}"> ${item.subCategoryName }</option>`
+                    })
+                    document.querySelector('#subCategoryId').innerHTML = ihtml;
+                },
+                error :(err)=>{
+                    console.log(err);
+                }
+            });
+
+            document.querySelector('#extraCategoryId').innerHTML = '<option value="">--Select Extra Category--</option>'
+            document.querySelector('#typeId').innerHTML = '<option value="">--Select Type--</option>'
+            document.querySelector('#brandId').innerHTML = '<option value="">--Select Brand--</option>'
+        });
+
+        // get extra category 
+        document.querySelector('#subCategoryId').addEventListener('change',(e)=>{
+            $.ajax({
+                type:'GET',
+                url:`/product/getExtraCategory/${e.target.value}`,
+                success : (res)=>{
+                    let ihtml = '<option value="">--Select Extra Category--</option>';
+                    res.map((item)=>{
+                        ihtml+=`<option value="${item._id}"> ${item.extraCategoryName }</option>`
+                    })
+                    document.querySelector('#extraCategoryId').innerHTML = ihtml;
+                },
+                error :(err)=>{
+                    console.log(err);
+                }
+            });
+            document.querySelector('#typeId').innerHTML = '<option value="">--Select Type--</option>'
+            document.querySelector('#brandId').innerHTML = '<option value="">--Select Brand--</option>'
+        });
+
+        // get brand and type 
+        document.querySelector('#extraCategoryId').addEventListener('change',(e)=>{
+            $.ajax({
+                type:'GET',
+                url:`/product/getBrandAndType/${e.target.value}`,
+                success : (res)=>{
+                    let ihtmlType = '<option value="">--Select Type--</option>';
+                    let ihtmlBrand = '<option value="">--Select Brand--</option>';
+                    res.type.map((item)=>{
+                        ihtmlType+=`<option value="${item._id}"> ${item.typeName }</option>`
+                    })
+                    document.querySelector('#typeId').innerHTML = ihtmlType;
+
+                    res.brand.map((item)=>{
+                        ihtmlBrand+=`<option value="${item._id}"> ${item.brandName }</option>`
+                    })
+                    document.querySelector('#brandId').innerHTML = ihtmlBrand;
+                },
+                error :(err)=>{
+                    console.log(err);
+                }
+            });
+        });
+  </script>

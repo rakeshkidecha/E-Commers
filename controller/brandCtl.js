@@ -2,6 +2,7 @@ const Category = require('../models/CategoryModel');
 const SubCategory = require('../models/SubCategoryModel');
 const ExtraCategory = require('../models/ExtraCategoryModel');
 const Brand = require('../models/BrandModel');
+const ORM = require('../services/ORM');
 
 module.exports.addBrand = async(req,res)=>{
     try {
@@ -17,7 +18,6 @@ module.exports.addBrand = async(req,res)=>{
 module.exports.getSubCategory = async(req,res)=>{
     try {
         const allSubCatBaseCat = await SubCategory.find({status:true,categoryId:req.params.catId});
-        console.log(allSubCatBaseCat)
         return res.json(allSubCatBaseCat);
     } catch (err) {
         req.flash('error',"Somthing Wrong")
@@ -113,6 +113,9 @@ module.exports.changeBrandStatus = async (req,res)=>{
 
         const updateBrand = await Brand.findByIdAndUpdate(id,{status:status});
         if(updateBrand){
+            if(status=='false'){
+                ORM.opration.deactiveProBsOnTypeOrBrand(updateBrand.productIds);
+            };
             req.flash('success',"Brand Status Change");
             console.log("Brand Status Change");
             return res.redirect('back');
@@ -137,6 +140,9 @@ module.exports.deleteBrand = async (req,res)=>{
             const singleExCat = await ExtraCategory.findById(deletedBrand.extraCategoryId);
             singleExCat.brandIds.splice(singleExCat.brandIds.indexOf(deletedBrand._id),1);
             await ExtraCategory.findByIdAndUpdate(singleExCat._id,singleExCat);
+
+            // remove related Product 
+            ORM.opration.deleteProBsOnTypeOrBrand(deletedBrand.productIds);
 
             req.flash('success',"Brand Deleted");
             console.log("Brand Deleted");
@@ -208,8 +214,12 @@ module.exports.editBrand = async(req,res)=>{
 
 module.exports.deactiveAllBrand = async (req,res)=>{
     try {
+        const allSelectedBrand = await Brand.find({_id:{$in:req.body.brandIds}});
         const deactivBrand = await Brand.updateMany({_id:{$in:req.body.brandIds}},{status:false});
         if(deactivBrand){
+            allSelectedBrand.map(async(item)=>{
+                ORM.opration.deactiveProBsOnTypeOrBrand(item.productIds);
+            })
             req.flash('success',"Deactive all Select Brand");
             console.log("Deactive all Select Brand");
             return res.redirect('back');
@@ -256,6 +266,9 @@ module.exports.operandAllDactiveBrand = async(req,res)=>{
                     const singleExCat = await ExtraCategory.findById(item.extraCategoryId);
                     singleExCat.brandIds.splice(singleExCat.brandIds.indexOf(item._id),1);
                     await ExtraCategory.findByIdAndUpdate(singleExCat._id,singleExCat);
+
+                    // remove related Product 
+                    ORM.opration.deleteProBsOnTypeOrBrand(item.productIds);
                 });
 
                 req.flash('success',"Delete All Selected Brand");

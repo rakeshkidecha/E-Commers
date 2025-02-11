@@ -1,0 +1,195 @@
+
+<%- include('../layouts/header') %>
+
+<div class="content-wrapper"> 
+    <div class="mb-4 d-flex align-items-center">
+        <form>
+          <input type="text" name="searchValue" value="<%= searchValue %>"  class="py-1 px-3 border rounded-1" placeholder="searching here" />
+          <input type="date" class="py-1 px-3 border rounded-1" name="date" value="<%= date && new Date(date).toISOString().split('T')[0] %>" />
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-magnifying-glass"></i></button>
+          <a href="/product/viewProduct" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrows-rotate"></i></a>
+        </form>
+        <div class="dropdown ms-2">
+          <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuSizeButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> ShortBy </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuSizeButton1">
+            <a class="dropdown-item" href="?sort=<%= sort==1?-1:1 %>&&sortType=title<%= searchValue?'&searchValue='+searchValue:'' %><%= date?'&date='+date:'' %>">Name ↑↓</a>
+            <a class="dropdown-item" href="?sort=<%= sort==1?-1:1 %>&&sortType=createdAt<%= searchValue?'&searchValue='+searchValue:'' %><%= date?'&date='+date:'' %>">Date ↑↓</a>
+          </div>
+        </div>
+      </div>
+
+    <div>
+        <div class="nav nav-tabs justify-content-center" id="nav-tab" role="tablist">
+          <button class="nav-link text-dark active" id="active-product-tab" data-bs-toggle="tab" data-bs-target="#active-product" type="button" role="tab" aria-controls="active-product" aria-selected="true">Active Product</button>
+          <button class="nav-link text-dark" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Deactive Product</button>
+        </div>
+    </div>
+
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="active-product" role="tabpanel" aria-labelledby="active-product-tab" tabindex="0">
+            <div class="card">
+                <div class="card-body">
+                  <form method="post" action="/product/deactiveAllProduct">
+                  <h4 class="card-title d-flex align-items-center justify-content-between">Active Product <button type="submit" style="font-size: 12px;" class="btn btn-primary p-2 ms-2 hideBtn" id="allDeactiveBtn"><i class="fa-solid fa-ban"></i></button></h4>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th class="d-flex align-items-center">
+                            <input type="checkbox" id="checkAll" />
+                          </th>
+                          <th style="width: 30px;">#</th>
+                          <th>Title</th>
+                          <th>Category</th>
+                          <th>Sub Category</th>
+                          <th>Extra Category</th>
+                          <th>Type</th>
+                          <th>Brand</th>
+                          <th>Price</th>
+                          <th>Discount</th>
+                          <th>CoverImage</th>
+                          <th>Produt Images</th>
+                          <th>Description</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% let count = 0;
+                        allProduct.map((item)=>{
+                          if(item.status) { %>
+                          <tr>
+                            <td><input type="checkbox" name="proIds" class="activeCat" value="<%= item._id %>"/></td>
+                            <td> <%= count++ %></td>
+                            <td> <%= item.title %> </td>
+                            <td> <%= item.categoryId.categoryName%> </td>
+                            <td> <%= item.subCategoryId.subCategoryName %> </td>
+                            <td> <%= item.extraCategoryId.extraCategoryName %> </td>
+                            <td> <%= item.typeId.typeName %> </td>
+                            <td> <%= item.brandId.brandName %> </td>
+                            <td> <%= item.price %> </td>
+                            <td> <%= item.discount %> </td>
+                            <td> 
+                                <img src="<%= item.coverImage %>" alt="CoverImage" title="CoverImage" style="height: 100px !important;width: 100px !important;object-fit: contain;" class="rounded-0 w-auto h-auto"/>
+                            </td>
+                            <td style="width: 100px;">
+                                <div class="row g-1">
+                                    <% item.productImages.map((v)=>{ %>
+                                        <div class="col-6">
+                                            <img src="<%= v %>" alt="CoverImage" title="CoverImage" style="width: 100% !important;object-fit: contain;" class="rounded-0 w-auto"/>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                            </td>
+                            <td> <%= item.description %> </td>
+                            <td> 
+                                <div class="d-flex">
+                                  <a href="/product/changeProductStatus/<%= item.id %>/false" class="nav-link mx-2"><i class="fa-solid fa-ban"></i></a>
+                                  <a href="/product/updateProduct/<%= item.id %>" class="nav-link mx-2"><i class="fa-solid fa-pen-to-square"></i></a>
+                                </div>
+                            </td>
+                          </tr>
+                        <% }}) %>
+                      </tbody>
+                    </table>
+                  </div>
+                </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+            <div class="card">
+                <div class="card-body">
+                  <form method="post" action="/product/operandAllDactiveProduct">
+                  <div class="card-title d-flex align-items-center justify-content-between">
+                    <h4>Deactive Product</h4>
+                    <div>
+                      <button type="submit" name="activeAll" value="activeAll" style="font-size: 12px;padding: 6px;" class="btn btn-primary ms-2 hideBtn" id="allActiveBtn" ><i class="mdi mdi-keyboard-return"></i></button>
+                      <button type="submit" name="deleteAll" value="deleteAll" style="font-size: 12px;" class="btn btn-primary p-2 ms-2 hideBtn" id="allDeleteBtn"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th class="d-flex align-items-center">
+                            <input type="checkbox" id="checkAllDeactive" />
+                          </th>
+                          <th style="width: 30px;">#</th>
+                          <th>Title</th>
+                          <th>Category</th>
+                          <th>Sub Category</th>
+                          <th>Extra Category</th>
+                          <th>Type</th>
+                          <th>Brand</th>
+                          <th>Price</th>
+                          <th>Discount</th>
+                          <th>CoverImage</th>
+                          <th>Produt Images</th>
+                          <th>Discription</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% count = 0;
+                        allProduct.map((item)=>{
+                          if(!item.status) {%>
+                          <tr>
+                            <td><input type="checkbox" name="proIds" class="deactiveCat" value="<%= item._id %>"/></td>
+                            <td> <%= count++ %></td>
+                            <td> <%= item.title %> </td>
+                            <td> <%= item.categoryId.categoryName%> </td>
+                            <td> <%= item.subCategoryId.subCategoryName %> </td>
+                            <td> <%= item.extraCategoryId.extraCategoryName %> </td>
+                            <td> <%= item.typeId.typeName %> </td>
+                            <td> <%= item.brandId.brandName %> </td>
+                            <td> <%= item.price %> </td>
+                            <td> <%= item.discount %> </td>
+                            <td> 
+                                <img src="<%= item.coverImage %>" alt="CoverImage" title="CoverImage" style="height: 100px !important;width: 100px !important;object-fit: contain;" class="rounded-0 w-auto h-auto"/>
+                            </td>
+                            <td style="width: 100px;">
+                                <div class="row g-1">
+                                    <% item.productImages.map((v)=>{ %>
+                                        <div class="col-6">
+                                            <img src="<%= v %>" alt="CoverImage" title="CoverImage" style="width: 100% !important;object-fit: contain;" class="rounded-0 w-auto"/>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                            </td>
+                            <td> <%= item.description %> </td>
+                            </td>
+                            <td> 
+                                <div class="d-flex">
+                                  <a href="/product/changeProductStatus/<%= item.id %>/true" class="nav-link mx-2"><i class="mdi mdi-keyboard-return" style="font-size: 18px;"></i></a>
+                                  <a href="/product/deleteProduct/<%= item.id %>" class="nav-link mx-2"><i class="fa-solid fa-trash"></i></a>
+                                  <a href="/product/updateProduct/<%= item.id %>" class="nav-link mx-2"><i class="fa-solid fa-pen-to-square"></i></a>
+                                </div>
+                            </td>
+                          </tr>
+                        <% }}) %>
+                      </tbody>
+                    </table>
+                  </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <%- include('../layouts/footer') %>
+
+  <script>
+
+    // $('#allDeactiveBtn').hide();
+    $("#checkAll").click(function(){
+      $('#allDeactiveBtn').toggleClass('hideBtn');
+      $('.activeCat').not(this).prop('checked', this.checked);
+    });
+    $("#checkAllDeactive").click(function(){
+      $('#allActiveBtn').toggleClass('hideBtn');
+      $('#allDeleteBtn').toggleClass('hideBtn');
+        $('.deactiveCat').not(this).prop('checked', this.checked);
+    });
+</script>

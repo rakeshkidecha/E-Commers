@@ -2,6 +2,7 @@ const Category = require('../models/CategoryModel');
 const SubCategory = require('../models/SubCategoryModel');
 const ExtraCategory = require('../models/ExtraCategoryModel');
 const Type = require('../models/TypeModel');
+const ORM = require('../services/ORM');
 
 module.exports.addType = async(req,res)=>{
     try {
@@ -26,7 +27,7 @@ module.exports.getSubCategory = async(req,res)=>{
     } catch (err) {
         req.flash('error',"Somthing Wrong")
         console.log("Some thing wrong",err);
-        return res.redirect('/subCategory');
+        return res.redirect('/type');
     }
 }
 
@@ -37,7 +38,7 @@ module.exports.getExtraCategory = async(req,res)=>{
     } catch (err) {
         req.flash('error',"Somthing Wrong")
         console.log("Some thing wrong",err);
-        return res.redirect('/subCategory');
+        return res.redirect('/type');
     }
 }
 
@@ -119,6 +120,9 @@ module.exports.changeTypeStatus = async(req,res)=>{
 
         const typeStatusChange = await Type.findByIdAndUpdate(id,{status:status});
         if(typeStatusChange){
+            if(status=='false'){
+                ORM.opration.deactiveProBsOnTypeOrBrand(typeStatusChange.productIds);
+            }
             req.flash('success',"Type Status Change Successfully");
             console.log("Type Status Change Successfully")
             return res.redirect('back');
@@ -144,6 +148,11 @@ module.exports.deleteType = async(req,res)=>{
             singleExtraCategory.typeIds.splice(singleExtraCategory.typeIds.indexOf(singleExtraCategory._id),1);
             await ExtraCategory.findByIdAndUpdate(singleExtraCategory._id,singleExtraCategory);
 
+            // delete all relatable product 
+            ORM.opration.deleteProBsOnTypeOrBrand(deletedType.productIds);
+
+            req.flash('success',"Type Deleted");
+            return res.redirect('back');
         }else{
             req.flash('error',"failed to Delete Type")
             console.log("failed to Delete Type");
@@ -208,8 +217,12 @@ module.exports.editType = async(req,res)=>{
 
 module.exports.deactiveAllType = async(req,res)=>{
     try {
+        const allSelectedType = await Type.find({_id:{$in:req.body.typeIds}});
         const deactiveAll = await Type.updateMany({_id:{$in:req.body.typeIds}},{status:false});
         if(deactiveAll){
+            allSelectedType.map(async(item)=>{
+                ORM.opration.deactiveProBsOnTypeOrBrand(item.productIds);
+            });
             req.flash('success',"Deactive All Selected Type");
             console.log("Deactive All Selected Type");
             return res.redirect('back');
@@ -251,6 +264,9 @@ module.exports.operandAllDactiveType = async(req,res)=>{
                 const sinleExCategory = await ExtraCategory.findById(item.extraCategoryId);
                 sinleExCategory.typeIds.splice(sinleExCategory.typeIds.indexOf(item._id),1);
                 await ExtraCategory.findByIdAndUpdate(sinleExCategory._id,sinleExCategory);
+
+                   // delete all relatable product 
+                ORM.opration.deleteProBsOnTypeOrBrand(item.productIds);
             });
 
             const deleteType = await Type.deleteMany({_id:{$in:req.body.typeIds}});

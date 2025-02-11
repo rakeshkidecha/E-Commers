@@ -20,6 +20,10 @@ const TypeSchema = mongoose.Schema({
         ref:'ExtraCategory',
         required:true
     },
+    productIds:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Product",
+    }],
     status:{
         type:Boolean,
         default:true
