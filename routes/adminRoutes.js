@@ -5,11 +5,11 @@ const Admin = require('../models/AdminModel');
 const passport = require('passport');
 const {check} = require('express-validator');
 
-router.get('/dashboard',adminCtl.dashboard)
+router.get('/dashboard',passport.checkLogin,adminCtl.dashboard)
 
-router.get('/addAdmin',adminCtl.addAdmin);
+router.get('/addAdmin',passport.checkLogin,adminCtl.addAdmin);
 
-router.get('/viewAdmin',adminCtl.viewAdmin)
+router.get('/viewAdmin',passport.checkLogin,adminCtl.viewAdmin)
 
 router.post('/insertAdmin',Admin.uploadAdminImage,[
     check('fName').notEmpty().withMessage('First Name is required').isLength({min:2}).withMessage("First name is expect minmum 2 catecter"),
@@ -36,13 +36,13 @@ router.post('/insertAdmin',Admin.uploadAdminImage,[
 router.get('/deleteAdmin/:id',adminCtl.deleteAdmin);
 
 // update admin record 
-router.get('/updateAdmin/:id',adminCtl.updateAdmin);
+router.get('/updateAdmin/:id',passport.checkLogin,adminCtl.updateAdmin);
 
 router.post('/editAdmin',Admin.uploadAdminImage,adminCtl.editAdmin);
 
 router.get('/changeAdminStatus/:id/:status',adminCtl.changeAdminStatus);
 
-router.get('/changePassword/:id',adminCtl.changePassword);
+router.get('/changePassword/:id',passport.checkLogin,adminCtl.changePassword);
 
 router.post('/checkChnagePassword',adminCtl.checkChnagePassword);
 
@@ -51,7 +51,7 @@ router.get('/adminLogOut',adminCtl.adminLogOut);
 // admin login system 
 router.get('/',adminCtl.login);
 
-router.post('/chekLogin',passport.authenticate('adminLogin',{failureRedirect:'/'}),adminCtl.chekLogin);
+router.post('/chekLogin',passport.authenticate('adminLogin',{failureRedirect:'/admin'}),adminCtl.chekLogin);
 
 router.get('/checkEmail',adminCtl.checkEmail);
 

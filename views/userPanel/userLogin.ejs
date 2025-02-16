@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>EShopper - Bootstrap Shop Template</title>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <meta content="Free HTML Templates" name="keywords">
+        <meta content="Free HTML Templates" name="description">
+    
+        <!-- Favicon -->
+        <link href="/userPanel/img/favicon.ico" rel="icon">
+    
+        <!-- Google Web Fonts -->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.css" integrity="sha512-0p3K0H3S6Q4bEWZ/WmC94Tgit2ular2/n0ESdfEX8l172YyQj8re1Wu9s/HT9T/T2osUw5Gx/6pAZNk3UKbESw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+        <!-- Font Awesome -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    
+        <!-- Libraries Stylesheet -->
+        <link href="/userPanel/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    
+        <!-- Customized Bootstrap Stylesheet -->
+        <link href="/userPanel/css/style.css" rel="stylesheet">
+    
+        <!-- custom css  -->
+         <link rel="stylesheet" href="/userPanel/css/custon.css">
+    </head>
+<body>
+    
+    <section class="userForm py-5" style="height: 100vh;overflow: scroll;">
+        <div class='mb-3 text-center'>
+            <h2 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h2>
+            <p>Welcome Back, Login and Continue Your Shopping</p>
+        </div>
+        <form method="post" action="/checkUser"  class="col-lg-4 col-md-6 col-9">
+            <label class="mb-1 mt-3" for="email">Email:- </label>
+            <input type="text" name="email" id="email" class="form-control" placeholder="Enter Your Email"/>
+
+            <label class="mb-1 mt-3" for="password">Password:- </label>
+            <input type="text" name="password" id="password" class="form-control" placeholder="Enter Username"/>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary ">Login</button>
+            </div>
+
+            <p class="mt-4 mb-2">Don't Have a Account?<a href="/userRegister">Register</a></p>
+        </form>
+    </section>
+
+
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+<script src="/userPanel/lib/easing/easing.min.js"></script>
+<script src="/userPanel/lib/owlcarousel/owl.carousel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  
+
+<!-- Contact Javascript File -->
+<script src="/userPanel/mail/jqBootstrapValidation.min.js"></script>
+<script src="/userPanel/mail/contact.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.js" integrity="sha512-lOrm9FgT1LKOJRUXF3tp6QaMorJftUjowOWiDcG5GFZ/q7ukof19V0HKx/GWzXCdt9zYju3/KhBNdCLzK8b90Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Template Javascript -->
+<script src="/userPanel/js/main.js"></script>
+<script>
+    '<% if(locals.flash && locals.flash.success.length > 0) { %>'
+         new Noty({
+           type: 'success',
+           layout: 'topCenter',
+           theme:'metroui',
+           text: '<%= locals.flash.success %>',
+           timeout : 1000
+         }).show();
+  ' <% } else if(locals.flash && locals.flash.error.length > 0) { %>'
+         new Noty({
+           type: 'error',
+           layout: 'topCenter',
+           theme:'metroui',
+           text: '<%= locals.flash.error %>',
+           timeout : 1000
+         }).show()
+   '<% } %> '
+  </script>
+</body>
+
+</html>

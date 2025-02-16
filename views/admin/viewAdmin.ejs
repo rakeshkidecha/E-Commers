@@ -7,7 +7,7 @@
         <input type="text" name="searchValue" value="<%= searchValue %>"  class="py-1 px-3 border rounded-1" placeholder="searching here" />
         <input type="date" class="py-1 px-3 border rounded-1" name="date" value="<%= date && new Date(date).toISOString().split('T')[0] %>" />
         <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-magnifying-glass"></i></button>
-        <a href="/viewAdmin" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrows-rotate"></i></a>
+        <a href="/admin/viewAdmin" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrows-rotate"></i></a>
       </form>
       <div class="dropdown ms-2">
         <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuSizeButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> ShortBy </button>
@@ -51,17 +51,17 @@
                         <div class="d-flex align-items-center">
                           <% if(item.status) { %>  
                             <span class="text-success me-2">Active</span>
-                            <a href="/changeAdminStatus/<%= item.id %>/false" class="fs-4">⌀</a>
+                            <a href="/admin/changeAdminStatus/<%= item.id %>/false" class="fs-4">⌀</a>
                           <% }else{ %>
                             <span class="text-danger me-2">Deactive</span>
-                            <a href="/changeAdminStatus/<%= item.id %>/true" >↩</a>
+                            <a href="/admin/changeAdminStatus/<%= item.id %>/true" >↩</a>
                           <% } %>
                         </div> 
                       </td>
                       <td> 
                           <div class="d-flex">
-                            <a href="/deleteAdmin/<%= item.id %>" class="nav-link mx-2"><i class="fa-solid fa-trash"></i></a>
-                            <a href="/updateAdmin/<%= item.id %>" class="nav-link mx-2"><i class="fa-solid fa-pen-to-square"></i></a>
+                            <a href="/admin/deleteAdmin/<%= item.id %>" class="nav-link mx-2"><i class="fa-solid fa-trash"></i></a>
+                            <a href="/admin/updateAdmin/<%= item.id %>" class="nav-link mx-2"><i class="fa-solid fa-pen-to-square"></i></a>
                           </div>
                       </td>
                     </tr>

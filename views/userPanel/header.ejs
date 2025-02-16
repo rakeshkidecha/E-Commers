@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>EShopper - Bootstrap Shop Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="/userPanel/img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.css" integrity="sha512-0p3K0H3S6Q4bEWZ/WmC94Tgit2ular2/n0ESdfEX8l172YyQj8re1Wu9s/HT9T/T2osUw5Gx/6pAZNk3UKbESw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="/userPanel/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/userPanel/css/style.css" rel="stylesheet">
+
+    <!-- custom css  -->
+     <link rel="stylesheet" href="/userPanel/css/custon.css">
+</head>
+
+<body>
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+        <div class="row align-items-center py-3 px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                <a href="" class="text-decoration-none">
+                    <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+                </a>
+            </div>
+            <div class="col-lg-6 col-6 text-left">
+                <form action="">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search for products">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-transparent text-primary">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-3 col-6 text-right">
+                <a href="" class="btn border">
+                    <i class="fas fa-heart text-primary"></i>
+                    <span class="badge">0</span>
+                </a>
+                <a href="" class="btn border">
+                    <i class="fas fa-shopping-cart text-primary"></i>
+                    <span class="badge">0</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+
+
+    <!-- Navbar Start -->
+    <div class="container-fluid mb-2">
+        <div class="row border-top px-xl-5">
+            <div class="col-12">
+                <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
+                    <a href="" class="text-decoration-none d-block d-lg-none">
+                        <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+                    </a>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div class="navbar-nav mr-auto py-0">
+                            <a href="/" class="nav-item nav-link active">Home</a>
+                            <% allCategory.map((item)=>{ %>
+                                <div class="nav-item dropdown">
+                                    <a href="/shop/?cat=<%= item._id %>" class="nav-link dropdown-toggle" data-toggle="dropdown"><%= item.categoryName %></a>
+                                    <div class="dropdown-menu rounded-0 m-0">
+                                        <% allSubCategory.map((v)=>{ 
+                                            if(item.id == v.categoryId){%>
+                                            <div class="nav-item deep-dropdown">
+                                                <a href="/shop?subCat=<%= v._id %>" class="dropdown-item"><%= v.subCategoryName %></a>
+                                                <div class="dropdown-menu deep-dropdown-menu rounded-0 m-0">
+                                                    <% allExCategory.map((ex)=>{ 
+                                                        if(v.id == ex.subCategoryId){%>
+                                                        <a href="/shop?exCat=<%= ex._id %>" class="dropdown-item"><%= ex.extraCategoryName %></a>
+                                                    <% }}) %>
+                                                </div>
+                                            </div>
+                                        <% }}) %>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                        <div class="navbar-nav ml-auto py-0">
+                            <% if(locals.adminData) {%>
+                                <div class="dropdown profile">
+                                    <div  data-bs-toggle="dropdown" class="dropdown-toggle">
+                                        <img src="<%= locals.adminData.profileImage %>" alt="ProfileImage"  title="ProfileImage" width="40px"  style="height: 40px;object-fit: contain;" class="img-fluid rounded-circle"/>
+                                    </div>
+                                    <ul class="dropdown-menu">
+                                      <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user me-2"></i> <%= locals.adminData.username %></a></li>
+                                      <li><a class="dropdown-item" href="#"><i class="fa-solid fa-lock me-2"></i> Change Password</a></li>
+                                      <li><a class="dropdown-item" href="/userLogout"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
+                                    </ul>
+                                </div>
+                            <% }else{ %>
+                                <a href="/userLogin" class="nav-item nav-link">Login</a>
+                                <a href="/userRegister" class="nav-item nav-link">Register</a>
+                            <% } %>    
+                        </div>
+                    </div>
+                </nav>
+               
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+
+    

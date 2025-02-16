@@ -9,7 +9,7 @@
           <div class="card-body">
             <h4 class="card-title">Add Admin</h4>
             <p class="card-description">Add Admin </p>
-            <form method="post" action="/insertAdmin" enctype="multipart/form-data" class="forms-sample">
+            <form method="post" action="/admin/insertAdmin" enctype="multipart/form-data" class="forms-sample">
               <div class="form-group">
                 <label for="exampleInputName1">*First Name:- </label>
                 <input type="text" name="fName" value="<%= oldValue && oldValue.fName %>" class="form-control" id="exampleInputName1" placeholder="First Name">
@@ -89,7 +89,7 @@
                 <% } %>
               </div>
               <button type="submit" class="btn btn-primary me-2">Submit</button>
-              <a href="/addAdmin" class="btn btn-light">Cancel</a>
+              <a href="/admin/addAdmin" class="btn btn-light">Cancel</a>
             </form>
           </div>
         </div>

@@ -9,7 +9,7 @@
           <div class="card-body">
             <h4 class="card-title">Edit Admin</h4>
             <p class="card-description">Edit Admin </p>
-            <form method="post" action="/editAdmin" enctype="multipart/form-data" class="forms-sample">
+            <form method="post" action="/admin/editAdmin" enctype="multipart/form-data" class="forms-sample">
                 <input type="hidden" name="id" value="<%= adminData.id %>" />
               <div class="form-group">
                 <label for="exampleInputName1">First Name:- </label>
@@ -59,7 +59,7 @@
                 <textarea class="form-control" name="about" id="exampleTextarea1" placeholder="About" rows="4"><%= adminData.about %></textarea>
               </div>
               <button type="submit" class="btn btn-primary me-2">Update</button>
-              <a href="/viewAdmin" class="btn btn-light">Cancel</a>
+              <a href="/admin/viewAdmin" class="btn btn-light">Cancel</a>
             </form>
           </div>
         </div>

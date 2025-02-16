@@ -1,0 +1,25 @@
+.deep-dropdown:hover .deep-dropdown-menu{
+    display: block !important;
+}
+.deep-dropdown-menu{
+    top: 10px !important;
+    left: 100% !important;
+}
+
+.userForm {
+    background-color: #EDF1FF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    overflow: scroll;
+}
+.userForm form{
+    border: 2px solid #9c8b8979;
+    padding: 20px;
+}
+
+.profile .dropdown-menu{
+    right: 0 !important;
+    left: auto !important;
+}

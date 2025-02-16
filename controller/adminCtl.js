@@ -7,11 +7,32 @@ const saltRounds = 10;
 const nodemailer = require('nodemailer');
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr('myTotallySecretKeyjsasds');
+const Category = require('../models/CategoryModel');
+const SubCategory = require('../models/SubCategoryModel');
+const ExtraCategory = require('../models/ExtraCategoryModel');
+const Type = require('../models/TypeModel');
+const Brand = require('../models/BrandModel');
+const Product = require('../models/ProductModel');
 
 
 module.exports.dashboard = async (req,res)=>{
     try {
-        return res.render('admin/dashboard');
+
+        const totalCategory = await Category.find({status:true}).countDocuments();
+        const totalSubCategory = await SubCategory.find({status:true}).countDocuments();
+        const totalExtraCategory = await ExtraCategory.find({status:true}).countDocuments();
+        const totalType = await Type.find({status:true}).countDocuments();
+        const totalBrand = await Brand.find({status:true}).countDocuments();
+        const totalProduct = await Product.find({status:true}).countDocuments();
+
+        return res.render('admin/dashboard',{
+            totalCategory,
+            totalSubCategory,
+            totalExtraCategory,
+            totalType,
+            totalBrand,
+            totalProduct
+        });
     } catch (err) {
         req.flash('error',"Somthing Wrong")
         console.log("Some thing wrong",err);
@@ -55,17 +76,17 @@ module.exports.insertAdmin = async (req,res)=>{
         if(addedAdmin){
             req.flash('success',"Admin Added Successfully");
             console.log("Admin Added Successfully");
-            return res.redirect('/addAdmin');
+            return res.redirect('/admin/addAdmin');
         }else{
             req.flash('error',"Faild to add admin");
             console.log("Faild to add admin");
-            return res.redirect('/addAdmin');
+            return res.redirect('/admin/addAdmin');
         }
 
     } catch (err) {
         req.flash('error',"Somthing Wrong")
         console.log("Some thing wrong",err);
-        return res.redirect('/addAdmin');
+        return res.redirect('/admin/addAdmin');
     }
 }
 
@@ -222,7 +243,7 @@ module.exports.editAdmin = async (req,res)=>{
         if(updatedAdmin){
             console.log("Admin Data Updated");
             req.flash('success',"Admin Data Updated");
-            return res.redirect('/viewAdmin');
+            return res.redirect('/admin/viewAdmin');
         }else{
             console.log("faild to update admin");
             req.flash('error',"faild to update admin");
@@ -273,7 +294,7 @@ module.exports.checkChnagePassword = async (req,res)=>{
                         console.log(err);
                         return res.redirect('back');
                     }
-                    return res.redirect('/');
+                    return res.redirect('/admin');
                 })
             }
         }else{
@@ -303,7 +324,7 @@ module.exports.login = async (req,res)=>{
 module.exports.chekLogin = async (req,res)=>{
     try {
          req.flash('success',"Login successfully");
-        return res.redirect('/dashboard');
+        return res.redirect('/admin/dashboard');
     } catch (err) {
         req.flash('error',"Somthing Wrong")
         console.log("Some thing wrong",err);
@@ -318,7 +339,7 @@ module.exports.adminLogOut = async (req,res)=>{
                 console.log(err);
                 return res.redirect('back');
             }
-            return res.redirect('/');
+            return res.redirect('/admin');
         })
     } catch (err) {
         req.flash('error',"Somthing Wrong")
@@ -380,7 +401,7 @@ module.exports.verifyEmail = async(req,res)=>{
           res.cookie('verifivationOtp',cryptr.encrypt(JSON.stringify(OTP)),{maxAge:30*1000});
           res.cookie('email',cryptr.encrypt(JSON.stringify(adminData.email)));
 
-          return res.redirect('/checkOtp')
+          return res.redirect('/admin/checkOtp')
 
     } catch (err) {
         req.flash('error',"Somthing Wrong")
@@ -419,7 +440,7 @@ module.exports.verifyOtp = async (req,res)=>{
 
         if(verifivationOtp == req.body.otp){
             res.clearCookie('verifivationOtp');
-            return res.redirect('/forgetPassword');
+            return res.redirect('/admin/forgetPassword');
         }else{
             console.log("Otp not match")
             req.flash('error',"Otp Not Match");
@@ -436,7 +457,7 @@ module.exports.verifyOtp = async (req,res)=>{
 module.exports.forgetPassword = async (req,res)=>{
     try {
         if(!req.cookies.email){
-            return res.redirect('/');
+            return res.redirect('/admin');
         }
 
         return res.render('loginSystem/forgetPassword');
@@ -463,7 +484,7 @@ module.exports.verifyNewPassword = async (req,res)=>{
         if(updatedAdmin){
             req.flash('success',"Password Updated");
             res.clearCookie('email');
-            return res.redirect('/');
+            return res.redirect('/admin');
         }else{
             req.flash('error',"Falid to Forget Password");
             return res.redirect('back')
