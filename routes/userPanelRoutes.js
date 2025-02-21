@@ -33,6 +33,17 @@ router.get('/userLogin',userPanelCtl.userLogin);
 
 router.post('/checkUser',passport.authenticate('userLogin',{failureRedirect:'/userLogin'}),userPanelCtl.checkUser);
 
-router.get('/userLogout',userPanelCtl.userLogout)
+router.get('/userLogout',userPanelCtl.userLogout);
+
+// add to cart 
+router.get('/addToCart/:id',passport.checkUserLogin,userPanelCtl.addToCart);
+
+router.get('/viewCart',passport.checkUserLogin,userPanelCtl.viewCart);
+
+router.get('/quantityIncOrdec/:id/:value',userPanelCtl.quantityIncOrdec);
+
+router.get('/removeCartItem/:id',userPanelCtl.removeCartItem);
+
+router.get('/checkOut',passport.checkUserLogin,userPanelCtl.checkOut);
 
 module.exports = router;

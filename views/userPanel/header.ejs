@@ -21,6 +21,7 @@
 
     <!-- Libraries Stylesheet -->
     <link href="/userPanel/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="/userPanel/css/style.css" rel="stylesheet">
@@ -39,14 +40,19 @@
                 </a>
             </div>
             <div class="col-lg-6 col-6 text-left">
-                <form action="">
+                <form>
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for products">
+                        <input type="text" name="search" value="<%= search?search:'' %>" class="form-control" placeholder="Search for products">
                         <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
+                            <button type="submit" class="input-group-text bg-transparent text-primary">
                                 <i class="fa fa-search"></i>
-                            </span>
+                            </button>
                         </div>
+                        <!-- <div class="input-group-append">
+                            <a href="/shop" class="input-group-text bg-transparent text-primary">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                            </a>
+                        </div> -->
                     </div>
                 </form>
             </div>
@@ -55,9 +61,9 @@
                     <i class="fas fa-heart text-primary"></i>
                     <span class="badge">0</span>
                 </a>
-                <a href="" class="btn border">
+                <a href="/viewCart" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
+                    <span class="badge"><%= totalQuantity %></span>
                 </a>
             </div>
         </div>
@@ -81,7 +87,7 @@
                             <a href="/" class="nav-item nav-link active">Home</a>
                             <% allCategory.map((item)=>{ %>
                                 <div class="nav-item dropdown">
-                                    <a href="/shop/?cat=<%= item._id %>" class="nav-link dropdown-toggle" data-toggle="dropdown"><%= item.categoryName %></a>
+                                    <a href="/shop/?cat=<%= item._id %>" class="nav-link dropdown-toggle" data-toggle="dropdown"  onclick="if (event.pointerType === 'mouse' && event.type === 'click') { event.stopPropagation(); location.href=this.href; }"><%= item.categoryName %></a>
                                     <div class="dropdown-menu rounded-0 m-0">
                                         <% allSubCategory.map((v)=>{ 
                                             if(item.id == v.categoryId){%>

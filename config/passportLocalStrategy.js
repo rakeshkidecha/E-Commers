@@ -68,4 +68,13 @@ passport.checkLogin = async(req,res,next)=>{
     return res.redirect('/admin');
 }
 
+passport.checkUserLogin = async(req,res,next)=>{
+    if(req.isAuthenticated()){
+        return next();
+    }
+    req.flash('error',"Please Login First")
+    return res.redirect('/userLogin');
+}
+
+
 module.exports = passport;
