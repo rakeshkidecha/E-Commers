@@ -10,11 +10,12 @@ const path = require('path');
 const User = require('../models/UserModel');
 const bcrypt = require('bcrypt');
 const Cart = require('../models/CartModel');
+const Order = require('../models/orderModel');
 
 async function getTotalQuantity(req){
     let totalQuantity = 0;
     if(req.user){
-        const allCartItem = await Cart.find({userId:req.user._id});
+        const allCartItem = await Cart.find({userId:req.user._id,status:true});
         totalQuantity = allCartItem.reduce((a,b)=>{
             return a + b.quantity 
         },0);
@@ -94,13 +95,6 @@ module.exports.shop = async(req,res)=>{
             ]
         }).sort({...(req.query.sort&&req.query.sortType&&{[req.query.sortType]:parseInt(req.query.sort)})}).skip(perPageData*page).limit(perPageData);
 
-        const allType =await Type.find({
-            status:true,
-            ...(req.query.cat&&{categoryId:req.query.cat}),
-            ...(req.query.subCat&&{subCategoryId:req.query.subCat}),
-            ...(req.query.exCat&&{extraCategoryId:req.query.exCat}),
-        });
-
         // for product count 
         
         const totalProduct = await Product.find({
@@ -128,28 +122,45 @@ module.exports.shop = async(req,res)=>{
             ]
         }).sort({...(req.query.sort&&req.query.sortType&&{[req.query.sortType]:parseInt(req.query.sort)})}).countDocuments();
 
-        const allBrand =await Brand.find({
+        const forFilteration = await Product.find({
             status:true,
             ...(req.query.cat&&{categoryId:req.query.cat}),
             ...(req.query.subCat&&{subCategoryId:req.query.subCat}),
             ...(req.query.exCat&&{extraCategoryId:req.query.exCat}),
+            $or:[
+                {title:{$regex:search,$options:'i'}}
+            ]
         });
 
-        const forPriceRange = await Product.find({
+        // for searching product relatad type and brand
+        let typeIds = []
+        let brandIds = []
+        forFilteration.map((item)=>{
+            if(!typeIds.includes(item.typeId.toString())){
+                typeIds.push(item.typeId.toString());
+            }
+            if(!brandIds.includes(item.brandId.toString())){
+                brandIds.push(item.brandId.toString());
+            }
+        });
+
+        const allType =await Type.find({
             status:true,
-            ...(req.query.cat&&{categoryId:req.query.cat}),
-            ...(req.query.subCat&&{subCategoryId:req.query.subCat}),
-            ...(req.query.exCat&&{extraCategoryId:req.query.exCat}),
+            _id:{$in:typeIds},
         });
 
-
+        const allBrand = await Brand.find({
+            status:true,
+            _id:{$in:brandIds},
+        });
 
         let maxPrice =0;
-        for(let i = 0 ;i<forPriceRange.length;i++){
-            if(forPriceRange[i].price > maxPrice){
-                maxPrice = forPriceRange[i].price
+        for(let i = 0 ;i<forFilteration.length;i++){
+            if(forFilteration[i].price > maxPrice){
+                maxPrice = forFilteration[i].price
             }
         }
+
         const priceRange = Math.ceil(maxPrice/5);
 
         const totalPage = Math.ceil(totalProduct/perPageData);
@@ -289,7 +300,7 @@ module.exports.userLogout = async(req,res)=>{
 // add to cart 
 module.exports.addToCart = async(req,res)=>{
     try {
-        const isExistProduct = await Cart.findOne({userId:req.user._id,productId:req.params.id});
+        const isExistProduct = await Cart.findOne({userId:req.user._id,productId:req.params.id,status:true});
         if(isExistProduct){
             const updateCart = await Cart.findByIdAndUpdate(isExistProduct._id,{quantity:isExistProduct.quantity + 1});
             if(updateCart){
@@ -327,7 +338,7 @@ module.exports.viewCart = async(req,res)=>{
         const allSubCategory = await SubCategory.find({status:true});
         const allExCategory = await ExtraCategory.find({status:true});
 
-        const allCartItem = await Cart.find({userId:req.user._id}).populate('productId').exec();
+        const allCartItem = await Cart.find({userId:req.user._id,status:true}).populate('productId').exec();
 
         return res.render('userPanel/viewCart',{
             allCategory,
@@ -413,6 +424,63 @@ module.exports.checkOut = async(req,res)=>{
             search:null,
             totalQuantity:await getTotalQuantity(req),
             totalPrice : Math.ceil(totalPrice)
+        });
+    } catch (err) {
+        console.log(err);
+        req.flash('error',"Something Wrong");
+        return res.redirect('back');
+    }
+};
+
+module.exports.placeOrder = async(req,res)=>{
+    try {
+        
+        const allCartItem = await Cart.find({userId:req.user._id,status:true});
+        req.body.cartIds = allCartItem.map((item)=>{
+            return item._id;
+        });
+        req.body.address = req.body.aLine1+' '+req.body.aLine2;
+        req.body.userId = req.user._id;
+
+
+        const addedOrder = await Order.create(req.body);
+        if(addedOrder){
+            await Cart.updateMany({_id:{$in:addedOrder.cartIds}},{status:false});
+            req.flash('success',"Order Placed");
+            return res.redirect('/');
+        }else{
+            req.flash('error',"Failed to Place order");
+            return res.redirect('back');
+        }
+
+    } catch (err) {
+        console.log(err);
+        req.flash('error',"Something Wrong");
+        return res.redirect('back');
+    }
+};
+
+module.exports.viewOrder = async(req,res)=>{
+    try {
+        const allCategory = await Category.find({status:true});
+        const allSubCategory = await SubCategory.find({status:true});
+        const allExCategory = await ExtraCategory.find({status:true});
+
+        const allOrder = await Order.find({userId:req.user._id});
+
+        for(let item of allOrder) {
+            item.allCartItem = await Cart.find({_id:{$in:item.cartIds}}).populate('productId').exec();
+        };
+
+        console.log(allOrder);
+
+        return res.render('userPanel/viewOrder',{
+            allCategory,
+            allSubCategory,
+            allExCategory,
+            search:null,
+            totalQuantity:await getTotalQuantity(req),
+            allOrder
         });
     } catch (err) {
         console.log(err);

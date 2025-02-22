@@ -46,4 +46,8 @@ router.get('/removeCartItem/:id',userPanelCtl.removeCartItem);
 
 router.get('/checkOut',passport.checkUserLogin,userPanelCtl.checkOut);
 
+router.post('/placeOrder',userPanelCtl.placeOrder);
+
+router.get('/viewOrder',passport.checkUserLogin,userPanelCtl.viewOrder);
+
 module.exports = router;
