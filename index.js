@@ -1,9 +1,9 @@
 const express = require('express');
-const path = require('path')
-const port = 8012;
+const path = require('path');
 const db = require('./config/db');
 const app = express();
 const cookieParser = require('cookie-parser');
+const env = require('dotenv').config();
 
 const passport = require('passport');
 const session = require('express-session');
@@ -39,4 +39,4 @@ app.use(flashMassage.flashMsg);
 
 app.use('/',require('./routes/generalRoutes'));
 
-app.listen(port,err=>console.log(err?err:"Server run in http://localhost:"+port))
+app.listen(process.env.PORT,err=>console.log(err?err:"Server run in http://localhost:"+process.env.PORT))

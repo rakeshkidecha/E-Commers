@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
+const env = require('dotenv').config();
 
-mongoose.connect('mongodb://127.0.0.1:27017/Ecommerce');
+// offline Uri 
+// mongoose.connect('mongodb://127.0.0.1:27017/Ecommerce');
+
+// online Uri
+mongoose.connect(process.env.MONGODB_CONNECT_URI);
 
 const db  = mongoose.connection;
 
