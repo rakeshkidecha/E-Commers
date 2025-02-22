@@ -10,7 +10,7 @@ const path = require('path');
 const User = require('../models/UserModel');
 const bcrypt = require('bcrypt');
 const Cart = require('../models/CartModel');
-const Order = require('../models/orderModel');
+const Order = require('../models/OrderModel');
 
 async function getTotalQuantity(req){
     let totalQuantity = 0;
