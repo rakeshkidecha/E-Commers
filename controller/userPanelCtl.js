@@ -35,14 +35,15 @@ module.exports.home = async(req,res)=>{
         const allCategory = await Category.find({status:true});
         const allSubCategory = await SubCategory.find({status:true});
         const allExCategory = await ExtraCategory.find({status:true});
-
+        const letestProduct = await Product.find({status:true}).sort({createdAt:-1}).limit(8);
        
         return res.render('userPanel/home',{
             allCategory,
             allSubCategory,
             allExCategory,
             search:null,
-            totalQuantity:await getTotalQuantity(req)
+            totalQuantity:await getTotalQuantity(req),
+            letestProduct
         });
     } catch (err) {
         console.log(err);

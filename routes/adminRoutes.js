@@ -5,7 +5,15 @@ const Admin = require('../models/AdminModel');
 const passport = require('passport');
 const {check} = require('express-validator');
 
-router.get('/dashboard',passport.checkLogin,adminCtl.dashboard)
+router.get('/dashboard',passport.checkLogin,adminCtl.dashboard);
+
+router.get('/viewUser',passport.checkLogin,adminCtl.viewUser);
+
+router.get('/changeUserStatus/:id/:status',adminCtl.changeUserStatus);
+
+router.get('/viewOrder',passport.checkLogin,adminCtl.viewOrder);
+
+router.get('/changeOrderStatus/:id/:status',adminCtl.changeOrderStatus);
 
 router.get('/addAdmin',passport.checkLogin,adminCtl.addAdmin);
 

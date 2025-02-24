@@ -97,12 +97,12 @@
             </li>
             <li class="nav-item nav-profile dropdown">
               <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown">
-                <img src="#" alt="profile" />
+                <img src="<%= locals.adminData.admin_image %>" alt="profile" />
               </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
                 <a href="/admin/adminProfile" class="dropdown-item">
-                  <i class="ti-user text-primary"></i> # </a>
-                <a href="/admin/changePassword/#" class="dropdown-item">
+                  <i class="ti-user text-primary"></i> <%= locals.adminData.name %> </a>
+                <a href="/admin/changePassword/<%= locals.adminData._id %>" class="dropdown-item">
                   <i class="ti-lock text-primary"></i> Change Password </a>
                 <a href="/admin/adminLogOut" class="dropdown-item">
                   <i class="ti-power-off text-primary"></i> Logout </a>
@@ -224,6 +224,32 @@
                 <ul class="nav flex-column sub-menu">
                   <li class="nav-item"> <a class="nav-link" href="/product">Add Product</a></li>
                   <li class="nav-item"> <a class="nav-link" href="/product/viewProduct">View Product</a></li>
+                </ul>
+              </div>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#user" aria-expanded="false" aria-controls="user">
+                <i class="icon-columns menu-icon"></i>
+                <span class="menu-title">User</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="user">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="/admin/viewUser">View User</a></li>
+                </ul>
+              </div>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#order" aria-expanded="false" aria-controls="order">
+                <i class="icon-columns menu-icon"></i>
+                <span class="menu-title">Order</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="order">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link" href="/admin/viewOrder">View Order</a></li>
                 </ul>
               </div>
             </li>

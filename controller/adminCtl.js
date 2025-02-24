@@ -13,6 +13,9 @@ const ExtraCategory = require('../models/ExtraCategoryModel');
 const Type = require('../models/TypeModel');
 const Brand = require('../models/BrandModel');
 const Product = require('../models/ProductModel');
+const Order = require('../models/OrderModel');
+const User = require('../models/UserModel');
+const Cart = require('../models/CartModel');
 
 
 module.exports.dashboard = async (req,res)=>{
@@ -24,6 +27,8 @@ module.exports.dashboard = async (req,res)=>{
         const totalType = await Type.find({status:true}).countDocuments();
         const totalBrand = await Brand.find({status:true}).countDocuments();
         const totalProduct = await Product.find({status:true}).countDocuments();
+        const totalOrder = await Order.find().countDocuments();
+        const totalUser = await User.find({status:true}).countDocuments();
 
         return res.render('admin/dashboard',{
             totalCategory,
@@ -31,8 +36,159 @@ module.exports.dashboard = async (req,res)=>{
             totalExtraCategory,
             totalType,
             totalBrand,
-            totalProduct
+            totalProduct,
+            totalOrder,
+            totalUser
         });
+    } catch (err) {
+        req.flash('error',"Somthing Wrong")
+        console.log("Some thing wrong",err);
+        return res.redirect('back');
+    }
+};
+
+module.exports.viewUser = async(req,res)=>{
+    try {
+        let searchValue ='';
+        let date,sort,sortType,page=0,perPageData = 3;
+
+        if(req.query.searchValue){
+            searchValue = req.query.searchValue;
+        }
+        
+        if(req.query.date){
+            date = new Date(req.query.date);
+        }
+
+        if(req.query.page){
+            page = req.query.page
+        }
+        
+        if(req.query.sort && req.query.sortType){
+            sort = parseInt(req.query.sort);
+            sortType = req.query.sortType;
+        }
+
+        const allUser = await User.find({
+            ...(date && {createdAt:{$gte:new Date(new Date(date).setHours(0,0,0,0)),$lte:new Date(new Date(date).setHours(23,59,59,999))}}),
+            $or:[
+                {username:{$regex:searchValue,$options:'i'}},
+            ]
+        }).sort({...(sort&&{[sortType]:sort})}).skip(perPageData*page).limit(perPageData);
+
+        const totalData = await User.find({
+            ...(date && {createdAt:{$gte:new Date(new Date(date).setHours(0,0,0,0)),$lte:new Date(new Date(date).setHours(23,59,59,999))}}),
+            $or:[
+                {username:{$regex:searchValue,$options:'i'}},
+            ]
+        }).countDocuments();
+
+        const totalPage = Math.ceil(totalData/perPageData);
+        
+        return res.render('admin/viewUser',{
+            allUser,
+            searchValue,
+            date,
+            sort,
+            sortType,
+            page:parseInt(page),
+            totalPage
+        });
+    } catch (err) {
+        req.flash('error',"Somthing Wrong")
+        console.log("Some thing wrong",err);
+        return res.redirect('back');
+    }
+};
+
+module.exports.changeUserStatus = async(req,res)=>{
+    try {
+        let {id,status} = req.params;
+        status = JSON.parse(status);
+        const changeStatus  = await User.findByIdAndUpdate(id,{status:!status});
+        if(changeStatus){
+            req.flash("success",'User Status Changed')
+            return res.redirect('back');
+        }else{
+            req.flash('error','User Status not change');
+            return res.redirect('back');
+        }
+    } catch (err) {
+        req.flash('error',"Somthing Wrong")
+        console.log("Some thing wrong",err);
+        return res.redirect('back');
+    }
+}
+
+module.exports.viewOrder = async(req,res)=>{
+    try {
+        let searchValue ='';
+        let date,sort,sortType;
+
+        if(req.query.searchValue){
+            searchValue = req.query.searchValue;
+        }
+        
+        if(req.query.date){
+            date = new Date(req.query.date);
+        }
+
+        if(req.query.sort && req.query.sortType){
+            sort = parseInt(req.query.sort);
+            sortType = req.query.sortType;
+        }
+
+        const allOrder = await Order.find({
+            ...(date && {createdAt:{$gte:new Date(new Date(date).setHours(0,0,0,0)),$lte:new Date(new Date(date).setHours(23,59,59,999))}}),
+            $or:[
+                {address:{$regex:searchValue,$options:'i'}},
+            ]
+        }).sort({...(sort&&{[sortType]:sort})});
+
+        for(let item of allOrder) {
+            item.allCartItem = await Cart.find({_id:{$in:item.cartIds}}).populate('productId').exec();
+            let totalPrice = 10;
+            item.allCartItem.map((v)=>{
+                totalPrice += parseInt(v.productId.price - (v.productId.price*v.productId.discount)/100);
+            });
+            item.totalPrice = totalPrice;
+        };
+        
+        return res.render('admin/viewOrder',{
+            allOrder,
+            searchValue,
+            date,
+            sort,
+            sortType,
+        });
+    } catch (err) {
+        req.flash('error',"Somthing Wrong")
+        console.log("Some thing wrong",err);
+        return res.redirect('back');
+    }
+};
+
+module.exports.changeOrderStatus = async(req,res)=>{
+    try {
+        const {id,status} = req.params;
+        
+        let changeStatus ;
+        if(status === 'pandding'){
+            changeStatus = await Order.findByIdAndUpdate(id,{status:'shipping'});
+        }else if(status === 'shipping'){
+            changeStatus = await Order.findByIdAndUpdate(id,{status:'out_for_delivery'});
+        }else if(status === 'out_for_delivery'){
+            changeStatus = await Order.findByIdAndUpdate(id,{status:'delivered'});
+        }
+
+        if(changeStatus){
+            req.flash("success",'Order Status Changed')
+            return res.redirect('back');
+        }else{
+            req.flash('error','Order Status not change');
+            return res.redirect('back');
+        }
+
     } catch (err) {
         req.flash('error',"Somthing Wrong")
         console.log("Some thing wrong",err);

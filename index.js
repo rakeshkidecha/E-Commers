@@ -37,6 +37,6 @@ app.use(passport.setAuthUser)
 app.use(flash());
 app.use(flashMassage.flashMsg);
 
-app.use('/',require('./routes/generalRoutes'));
+app.use('/',require('./routes'));
 
 app.listen(process.env.PORT,err=>console.log(err?err:"Server run in http://localhost:"+process.env.PORT))

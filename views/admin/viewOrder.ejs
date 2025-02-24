@@ -1,0 +1,352 @@
+
+<%- include('../layouts/header') %>
+
+<div class="content-wrapper"> 
+    <div class="mb-4 d-flex align-items-center">
+      <form>
+        <input type="text" name="searchValue" value="<%= searchValue %>"  class="py-1 px-3 border rounded-1" placeholder="searching here" />
+        <input type="date" class="py-1 px-3 border rounded-1" name="date" value="<%= date && new Date(date).toISOString().split('T')[0] %>" />
+        <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <a href="/admin/viewAdmin" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrows-rotate"></i></a>
+      </form>
+      <div class="dropdown ms-2">
+        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuSizeButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> ShortBy </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuSizeButton1">
+          <a class="dropdown-item" href="?sort=<%= sort==1?-1:1 %>&&sortType=name<%= searchValue?'&searchValue='+searchValue:'' %><%= date?'&date='+date:'' %>">Name ↑↓</a>
+          <a class="dropdown-item" href="?sort=<%= sort==1?-1:1 %>&&sortType=createdAt<%= searchValue?'&searchValue='+searchValue:'' %><%= date?'&date='+date:'' %>">Date ↑↓</a>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="nav nav-tabs justify-content-center" id="nav-tab" role="tablist">
+        <button class="nav-link text-dark active" id="success_payment-tab" data-bs-toggle="tab" data-bs-target="#success_payment" type="button" role="tab" aria-controls="success_payment" aria-selected="true">Payment Success Order</button>
+
+        <button class="nav-link text-dark" id="failed_Payment-tab" data-bs-toggle="tab" data-bs-target="#failed_Payment" type="button" role="tab" aria-controls="failed_Payment" aria-selected="false">Payment Failed Order</button>
+
+        <button class="nav-link text-dark" id="pandding-tab" data-bs-toggle="tab" data-bs-target="#pandding" type="button" role="tab" aria-controls="pandding" aria-selected="false">Pandding Order</button>
+
+        <button class="nav-link text-dark" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button" role="tab" aria-controls="shipping" aria-selected="false">Shipping Order</button>
+
+        <button class="nav-link text-dark" id="out_for_delivery_tab" data-bs-toggle="tab" data-bs-target="#out_for_delivery" type="button" role="tab" aria-controls="out_for_delivery" aria-selected="false">Out for Delivery Order</button>
+
+        <button class="nav-link text-dark" id="delivered-tab" data-bs-toggle="tab" data-bs-target="#delivered" type="button" role="tab" aria-controls="delivered" aria-selected="false">Delivered Order</button>
+      </div>
+  </div>
+
+  <div class="tab-content" id="nav-tabContent">
+      <div class="tab-pane fade show active" id="success_payment" role="tabpanel" aria-labelledby="success_payment-tab" tabindex="0">
+          <div class="card">
+              <div class="card-body">
+                <h4 class="card-title d-flex align-items-center justify-content-between">Payment Success Order</h4>
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th> #</th>
+                        <th> OrderID </th>
+                        <th> Products </th>
+                        <th> Address </th>
+                        <th> Date </th>
+                        <th> Total Price </th>
+                        <th> Status </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <%let count = 0;
+                           allOrder.map((item,i)=>{ 
+                          if(item.paymentStatus) { 
+                            count++ %>
+                            <tr>
+                                <td><%= count %></td>
+                                <td><%= item._id %></td>
+                                <td>
+                                    <% item.allCartItem.map((v)=>{ %>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <img src="<%= v.productId.coverImage %>" alt="coverImage" />
+                                            <p class="m-0 ms-2"><%= v.productId.title %></p>
+                                        </div>
+                                    <% }) %>    
+                                </td>
+                                <td><%= item.address %></td>
+                                <td><%= new Date(item.createdAt).toISOString().split('T')[0] %></td>
+                                <td><%= item.totalPrice %></td>
+                                <td><%= item.status %></td>
+                            </tr>
+                        <% }}) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="tab-pane fade" id="failed_Payment" role="tabpanel" aria-labelledby="failed_Payment-tab" tabindex="0">
+          <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-center justify-content-between">
+                  <h4>Payment Failed Order</h4>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th> #</th>
+                        <th> OrderID </th>
+                        <th> Products </th>
+                        <th> Address </th>
+                        <th> Date </th>
+                        <th> Total Price </th>
+                        <th> Status </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <% count = 0; 
+                        allOrder.map((item,i)=>{
+                          if(!item.paymentStatus) {
+                            count++ %>
+                            <tr>
+                                <td><%= count %></td>
+                                <td><%= item._id %></td>
+                                <td>
+                                    <% item.allCartItem.map((v)=>{ %>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <img src="<%= v.productId.coverImage %>" alt="coverImage" />
+                                            <p class="m-0 ms-2"><%= v.productId.title %></p>
+                                        </div>
+                                    <% }) %>    
+                                </td>
+                                <td><%= item.address %></td>
+                                <td><%= new Date(item.createdAt).toISOString().split('T')[0] %></td>
+                                <td><%= item.totalPrice %></td>
+                                <td><%= item.status %></td>
+                            </tr>
+                        <% }}) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="tab-pane fade" id="pandding" role="tabpanel" aria-labelledby="pandding-tab" tabindex="0">
+          <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-center justify-content-between">
+                  <h4>Pandding Order</h4>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th> #</th>
+                        <th> OrderID </th>
+                        <th> Products </th>
+                        <th> Address </th>
+                        <th> Date </th>
+                        <th> Total Price </th>
+                        <th> Status </th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <% count = 0; 
+                          allOrder.map((item,i)=>{
+                          if(item.paymentStatus && item.status == 'pandding') {
+                            count++ %>
+                            <tr>
+                                <td><%= count %></td>
+                                <td><%= item._id %></td>
+                                <td>
+                                    <% item.allCartItem.map((v)=>{ %>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <img src="<%= v.productId.coverImage %>" alt="coverImage" />
+                                            <p class="m-0 ms-2"><%= v.productId.title %></p>
+                                        </div>
+                                    <% }) %>    
+                                </td>
+                                <td><%= item.address %></td>
+                                <td><%= new Date(item.createdAt).toISOString().split('T')[0] %></td>
+                                <td><%= item.totalPrice %></td>
+                                <td><%= item.status %></td>
+                                <td>
+                                  <a href="/admin/changeOrderStatus/<%= item.id %>/<%= item.status %>">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                  </a>
+                                </td>
+                            </tr>
+                        <% }}) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="tab-pane fade" id="shipping" role="tabpanel" aria-labelledby="shipping-tab" tabindex="0">
+          <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-center justify-content-between">
+                  <h4>Shipping Order</h4>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th> #</th>
+                        <th> OrderID </th>
+                        <th> Products </th>
+                        <th> Address </th>
+                        <th> Date </th>
+                        <th> Total Price </th>
+                        <th> Status </th>
+                        <th> Action </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <% count = 0; 
+                        allOrder.map((item,i)=>{
+                          if(item.paymentStatus && item.status == 'shipping') {
+                            count++ %>
+                            <tr>
+                                <td><%= count %></td>
+                                <td><%= item._id %></td>
+                                <td>
+                                    <% item.allCartItem.map((v)=>{ %>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <img src="<%= v.productId.coverImage %>" alt="coverImage" />
+                                            <p class="m-0 ms-2"><%= v.productId.title %></p>
+                                        </div>
+                                    <% }) %>    
+                                </td>
+                                <td><%= item.address %></td>
+                                <td><%= new Date(item.createdAt).toISOString().split('T')[0] %></td>
+                                <td><%= item.totalPrice %></td>
+                                <td><%= item.status %></td>
+                                <td>
+                                  <a href="/admin/changeOrderStatus/<%= item.id %>/<%= item.status %>">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                  </a>
+                                </td>
+                            </tr>
+                        <% }}) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="tab-pane fade" id="out_for_delivery" role="tabpanel" aria-labelledby="out_for_delivery_tab" tabindex="0">
+          <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-center justify-content-between">
+                  <h4>Out For Delivery Order</h4>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th> #</th>
+                        <th> OrderID </th>
+                        <th> Products </th>
+                        <th> Address </th>
+                        <th> Date </th>
+                        <th> Total Price </th>
+                        <th> Status </th>
+                        <th> Action </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <% count = 0; 
+                        allOrder.map((item,i)=>{
+                          if(item.paymentStatus && item.status == 'out_for_delivery') {
+                            count++ %>
+                            <tr>
+                                <td><%= count %></td>
+                                <td><%= item._id %></td>
+                                <td>
+                                    <% item.allCartItem.map((v)=>{ %>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <img src="<%= v.productId.coverImage %>" alt="coverImage" />
+                                            <p class="m-0 ms-2"><%= v.productId.title %></p>
+                                        </div>
+                                    <% }) %>    
+                                </td>
+                                <td><%= item.address %></td>
+                                <td><%= new Date(item.createdAt).toISOString().split('T')[0] %></td>
+                                <td><%= item.totalPrice %></td>
+                                <td><%= item.status %></td>
+                                <td>
+                                  <a href="/admin/changeOrderStatus/<%= item.id %>/<%= item.status %>">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                  </a>
+                                </td>
+                            </tr>
+                        <% }}) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="tab-pane fade" id="delivered" role="tabpanel" aria-labelledby="delivered-tab" tabindex="0">
+        <div class="card">
+            <div class="card-body">
+              <div class="card-title d-flex align-items-center justify-content-between">
+                <h4>Delivered Order</h4>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th> #</th>
+                      <th> OrderID </th>
+                      <th> Products </th>
+                      <th> Address </th>
+                      <th> Date </th>
+                      <th> Total Price </th>
+                      <th> Status </th>
+                      <th> Action </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      <% count = 0; 
+                      allOrder.map((item,i)=>{
+                        if(item.paymentStatus && item.status == 'delivered') {
+                          count++ %>
+                          <tr>
+                              <td><%= count %></td>
+                              <td><%= item._id %></td>
+                              <td>
+                                  <% item.allCartItem.map((v)=>{ %>
+                                      <div class="d-flex align-items-center mb-2">
+                                          <img src="<%= v.productId.coverImage %>" alt="coverImage" />
+                                          <p class="m-0 ms-2"><%= v.productId.title %></p>
+                                      </div>
+                                  <% }) %>    
+                              </td>
+                              <td><%= item.address %></td>
+                              <td><%= new Date(item.createdAt).toISOString().split('T')[0] %></td>
+                              <td><%= item.totalPrice %></td>
+                              <td><%= item.status %></td>
+                              <td>
+                                <a href="/admin/changeOrderStatus/<%= item.id %>/<%= item.status %>">
+                                  <i class="fa-solid fa-arrow-right"></i>
+                                </a>
+                              </td>
+                          </tr>
+                      <% }}) %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+        </div>
+      </div>
+  </div>
+
+
+  </div>
+
+  <%- include('../layouts/footer') %>
