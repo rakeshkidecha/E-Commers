@@ -11,6 +11,8 @@ const User = require('../models/UserModel');
 const bcrypt = require('bcrypt');
 const Cart = require('../models/CartModel');
 const Order = require('../models/OrderModel');
+const Razorpay = require('razorpay');
+const crypto = require('crypto')
 
 async function getTotalQuantity(req){
     let totalQuantity = 0;
@@ -411,8 +413,8 @@ module.exports.checkOut = async(req,res)=>{
         const allSubCategory = await SubCategory.find({status:true});
         const allExCategory = await ExtraCategory.find({status:true});
 
-        const allCartItem = await Cart.find({userId:req.user._id}).populate('productId').exec();
-        let totalPrice = 0
+        const allCartItem = await Cart.find({userId:req.user._id,status:true}).populate('productId').exec();
+        let totalPrice = 10
         allCartItem.map((item)=>{
             totalPrice += (item.productId.price - (item.productId.price*item.productId.discount)/100)*item.quantity
         });
@@ -422,7 +424,7 @@ module.exports.checkOut = async(req,res)=>{
             allSubCategory,
             allExCategory,
             search:null,
-            totalQuantity:await getTotalQuantity(req),
+            totalQuantity: await getTotalQuantity(req),
             totalPrice : Math.ceil(totalPrice)
         });
     } catch (err) {
@@ -432,11 +434,14 @@ module.exports.checkOut = async(req,res)=>{
     }
 };
 
+
 module.exports.placeOrder = async(req,res)=>{
     try {
         
-        const allCartItem = await Cart.find({userId:req.user._id,status:true});
+        const allCartItem = await Cart.find({userId:req.user._id,status:true}).populate('productId').exec();
+        let totalPrice = 0;
         req.body.cartIds = allCartItem.map((item)=>{
+            totalPrice += (item.productId.price - (item.productId.price*item.productId.discount)/100)*item.quantity;;
             return item._id;
         });
         req.body.address = req.body.aLine1+' '+req.body.aLine2;
@@ -445,9 +450,37 @@ module.exports.placeOrder = async(req,res)=>{
 
         const addedOrder = await Order.create(req.body);
         if(addedOrder){
-            await Cart.updateMany({_id:{$in:addedOrder.cartIds}},{status:false});
-            req.flash('success',"Order Placed");
-            return res.redirect('/');
+            // await Cart.updateMany({_id:{$in:addedOrder.cartIds}},{status:false});
+
+            const instance = new Razorpay({
+                key_id: process.env.RAZORPAY_KEY_ID,
+                key_secret: process.env.RAZORPAY_SECRET_KEY
+            });
+
+            const options = {
+                amount : (totalPrice*100)+1000,
+                currency: "INR",
+                receipt: "order_Receipt",
+            };
+    
+            instance.orders.create(options,(err,order)=>{
+                if(!err){
+                    console.log(order)
+                    const orderDetail = {
+                        order_id:order.id,
+                        amount:order.amount,
+                        key_id: process.env.RAZORPAY_KEY_ID,
+                        addedOrderId:addedOrder._id,
+                    }
+                    // res.locals.orderDetail = orderDetail;
+                    req.flash('success',"Make your Payment");
+                    return res.redirect(`/payment/${JSON.stringify(orderDetail)}`);
+                }else{
+                    console.log(err)
+                    req.flash('error',"Failed to Place order");
+                    return res.redirect('back');
+                }
+            });
         }else{
             req.flash('error',"Failed to Place order");
             return res.redirect('back');
@@ -460,19 +493,72 @@ module.exports.placeOrder = async(req,res)=>{
     }
 };
 
+module.exports.payment = async(req,res)=>{
+    try {
+        const allCategory = await Category.find({status:true});
+        const allSubCategory = await SubCategory.find({status:true});
+        const allExCategory = await ExtraCategory.find({status:true});
+
+        console.log(JSON.parse(req.params.orderDetail));
+        const orderDetail = JSON.parse(req.params.orderDetail);
+        const addedOrder = await Order.findById(orderDetail.addedOrderId)
+        const totalQuantity = addedOrder.cartIds.length;
+        return res.render('userPanel/payment',{
+            allCategory,
+            allSubCategory,
+            allExCategory,
+            search:null,
+            totalQuantity,
+            orderDetail
+        });
+    } catch (err) {
+        console.log(err);
+        req.flash('error',"Something Wrong");
+        return res.redirect('back');
+    }
+};
+
+module.exports.verifyPayment = async(req,res)=>{
+    try {
+        const orderRes = JSON.parse(req.params.orderRes);
+        const {razorpay_order_id,razorpay_payment_id,razorpay_signature,addedOrderId} = orderRes;
+        const key_secret = process.env.RAZORPAY_SECRET_KEY;
+
+        let hmacObj = crypto.createHmac('sha256',key_secret);
+        hmacObj.update(razorpay_order_id+'|'+razorpay_payment_id);
+
+        const genearted_signature = hmacObj.digest('hex');
+
+        if(razorpay_signature===genearted_signature){
+            const currentOrder = await Order.findByIdAndUpdate(addedOrderId,{paymentStatus:true});
+            await Cart.updateMany({_id:{$in:currentOrder.cartIds}},{status:false});
+            req.flash('success',"Payment successfully");
+            return res.redirect('/');
+        }else{
+            const currentOrder = await Order.findById(addedOrderId);
+            await Cart.updateMany({_id:{$in:currentOrder.cartIds}});
+            await Order.findByIdAndDelete(addedOrderId);
+            req.flash('error',"Payment failed");
+            return res.redirect('/');
+        }
+
+    } catch (err) {
+        req.flash('error',"Something Wrong");
+        return res.redirect('back');
+    }
+}
+
 module.exports.viewOrder = async(req,res)=>{
     try {
         const allCategory = await Category.find({status:true});
         const allSubCategory = await SubCategory.find({status:true});
         const allExCategory = await ExtraCategory.find({status:true});
 
-        const allOrder = await Order.find({userId:req.user._id});
+        const allOrder = await Order.find({userId:req.user._id,paymentStatus:true});
 
         for(let item of allOrder) {
             item.allCartItem = await Cart.find({_id:{$in:item.cartIds}}).populate('productId').exec();
         };
-
-        console.log(allOrder);
 
         return res.render('userPanel/viewOrder',{
             allCategory,

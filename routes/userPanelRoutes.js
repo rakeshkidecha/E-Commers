@@ -50,4 +50,8 @@ router.post('/placeOrder',userPanelCtl.placeOrder);
 
 router.get('/viewOrder',passport.checkUserLogin,userPanelCtl.viewOrder);
 
+router.get('/payment/:orderDetail',userPanelCtl.payment);
+
+router.get('/verifyPayment/:orderRes',userPanelCtl.verifyPayment);
+
 module.exports = router;

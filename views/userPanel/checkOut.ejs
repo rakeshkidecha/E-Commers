@@ -93,3 +93,31 @@
 
 
 <%- include('footer') %>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    '<% if(locals.orderDetail){ %>'
+    console.log("object")
+    const options = {
+        key: locals.orderDetail.key_id, // Replace with your Razorpay key_id
+        amount: locals.orderDetail.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        currency: 'INR',
+        name: 'Acme Corp',
+        description: 'Test Transaction',
+        order_id: locals.orderDetail.order_id, // This is the order_id created in the backend
+        handler : (res)=>{
+            alert('payment success');
+        },
+        prefill: {
+          name: 'Rakesh kidecha',
+          email: 'rakeshkidecha123@gmail.com',
+          contact: '9999999999'
+        },
+        theme: {
+          color: '#F37254'
+        },
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    '<% } %>'
+</script>

@@ -15,7 +15,8 @@
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
     "passport": "^0.7.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "razorpay": "^2.9.5"
   },
   "name": "e-commerce",
   "version": "1.0.0",

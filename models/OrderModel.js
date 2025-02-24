@@ -29,6 +29,10 @@ const OrderSchema = mongoose.Schema({
         type:Number,
         required:true
     },
+    paymentStatus:{
+        type:Boolean,
+        default:false
+    },
     status:{
         type:String,
         default:'pandding'
