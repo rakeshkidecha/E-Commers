@@ -35,6 +35,13 @@ router.post('/checkUser',passport.authenticate('userLogin',{failureRedirect:'/us
 
 router.get('/userLogout',userPanelCtl.userLogout);
 
+// google login 
+router.get('/auth/google',passport.authenticate('google', { scope: ['email','profile'] }));
+
+router.get('/auth/google/callback',passport.authenticate('google',{failureRedirect:'/userLogin'}),async (req,res)=>{
+    return res.redirect('/');
+});
+
 // add to cart 
 router.get('/addToCart/:id',passport.checkUserLogin,userPanelCtl.addToCart);
 

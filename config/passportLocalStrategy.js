@@ -3,6 +3,8 @@ const LocalStrategy = require('passport-local').Strategy;
 const Admin = require('../models/AdminModel');
 const User = require('../models/UserModel');
 const bcrypt = require('bcrypt');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const env = require('dotenv').config();
 
 // Admin Login Stategy 
 passport.use('adminLogin',new LocalStrategy({usernameField:'email',passReqToCallback:true},async (req,email,password,done)=>{
@@ -33,6 +35,30 @@ passport.use('userLogin',new LocalStrategy({usernameField:'email',passReqToCallb
     }else{
         req.flash('error',"Invalid Email");
         return done(null,false);
+    }
+}));
+
+// user google login strategy 
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: 'http://localhost:8012/auth/google/callback',
+},async(accessToken, refreshToken, profile, done)=>{
+    const isExistUser = await User.findOne({email:profile.emails[0].value});
+    if(isExistUser){
+        done(null,isExistUser);
+    }else{
+        const createUser = await User.create({
+            username : profile.displayName,
+            email:profile.emails[0].value,
+            password: await bcrypt.hash('googlePass',10),
+            profileImage: '/uploads/user/profileImage-1740394711331'
+        });
+        if(createUser){
+            done(null,createUser);
+        }else{
+            done(null,false);
+        }
     }
 }));
 
