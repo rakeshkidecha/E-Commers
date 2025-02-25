@@ -33,7 +33,7 @@ passport.use('userLogin',new LocalStrategy({usernameField:'email',passReqToCallb
             return done(null,false);
         }
     }else{
-        req.flash('error',"Invalid Email");
+        req.flash('error',"Invalid Email or Account has been Blocked");
         return done(null,false);
     }
 }));

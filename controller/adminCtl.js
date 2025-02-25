@@ -107,8 +107,36 @@ module.exports.changeUserStatus = async(req,res)=>{
         status = JSON.parse(status);
         const changeStatus  = await User.findByIdAndUpdate(id,{status:!status});
         if(changeStatus){
-            req.flash("success",'User Status Changed')
-            return res.redirect('back');
+            if(status){
+                const transporter = nodemailer.createTransport({
+                    host: "smtp.gmail.com",
+                    port: 587,
+                    secure: false, // true for port 465, false for other ports
+                    auth: {
+                      user: "kidecharakesh2002@gmail.com",
+                      pass: "geeifzuqeavqkgfx",
+                    },
+                  });
+        
+        
+                  const info = await transporter.sendMail({
+                    from: 'kidecharakesh2002@gmail.com', // sender address
+                    to: changeStatus.email, // list of receivers
+                    subject: "Deactivate Account", // Subject line
+                    html: `<p> your account is Deactivate </p>`, // html body
+                  });
+        
+                  console.log("Message sent: %s", info.messageId);
+                  if(info){
+                    req.flash("success",'User Status Changed');
+                    return res.redirect('back');
+                  }else{
+                    req.flash("error",'Mail not send');
+                    return res.redirect('back');
+                  }
+                }
+                req.flash("success",'User Status Changed');
+                return res.redirect('back');
         }else{
             req.flash('error','User Status not change');
             return res.redirect('back');
@@ -173,7 +201,7 @@ module.exports.changeOrderStatus = async(req,res)=>{
         const {id,status} = req.params;
         
         let changeStatus ;
-        if(status === 'pandding'){
+        if(status === 'pending'){
             changeStatus = await Order.findByIdAndUpdate(id,{status:'shipping'});
         }else if(status === 'shipping'){
             changeStatus = await Order.findByIdAndUpdate(id,{status:'out_for_delivery'});
