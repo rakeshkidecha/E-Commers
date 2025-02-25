@@ -22,16 +22,16 @@ A **backend e-commerce application** built with **Node.js, Express.js, MongoDB, 
 ## 🔧 Installation
 
 1️⃣ **Clone the repository**  
-```bash
+
 git clone https://github.com/rakeshkidecha/E-Commers/.git
 cd E-Commers
 
 2️⃣ Install dependencies
-bash
+
 npm install
 
 3️⃣ Set up environment variables
-bash
+
 Create a .env file in the root directory and add:
 MONGODB_CONNECT_URI = Your_Mongodb_uri
 PORT = your_port
@@ -41,5 +41,5 @@ GOOGLE_CLIENT_ID = your_google_client_id
 GOOGLE_CLIENT_SECRET =  your_google_secret
 
 4️⃣ Run the application
-bash
+
 node index.js
