@@ -20,7 +20,7 @@ A **backend e-commerce application** built with **Node.js, Express.js, MongoDB, 
 - **Payment Gateway:** Razorpay  
 
 ## 🔧 Installation
-
+```bash
 1️⃣ **Clone the repository**  
 
 git clone https://github.com/rakeshkidecha/E-Commers/.git
